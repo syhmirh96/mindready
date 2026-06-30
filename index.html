@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MindReady — Malaysia CWG 2026</title>
+<style>
+:root {
+  --navy:#0D3B6E; --navy-light:#1a5294; --gold:#FFD700;
+  --red:#C0392B; --red-light:#e74c3c;
+  --green:#1a7a4a; --green-bg:#eafaf1;
+  --amber:#d68910; --amber-bg:#fef9e7; --red-bg:#fdf2f2;
+  --purple:#7b3fe4; --purple-bg:#f3eeff;
+  --teal:#0e7490; --teal-bg:#e0f2fe;
+  --gray-100:#f5f6f8; --gray-200:#e8eaed; --gray-400:#9aa0a8;
+  --gray-600:#5f6368; --gray-800:#202124; --white:#fff;
+  --radius:14px; --radius-sm:9px; --shadow:0 2px 8px rgba(13,59,110,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--gray-100);color:var(--gray-800)}
+
+/* SPLASH */
+#splash{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;background:linear-gradient(160deg,var(--navy) 0%,#1a5294 100%)}
+.splash-logo{width:72px;height:72px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--navy);margin-bottom:16px}
+.splash-title{font-size:26px;font-weight:700;color:#fff;letter-spacing:-.4px}
+.splash-sub{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px;margin-bottom:36px;text-align:center;line-height:1.5}
+.welcome-back{width:100%;max-width:360px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,215,0,.4);border-radius:var(--radius);padding:16px 18px;margin-bottom:24px;display:none}
+.welcome-back .wb-name{font-size:16px;font-weight:700;color:var(--gold)}
+.welcome-back .wb-sub{font-size:12px;color:rgba(255,255,255,.65);margin-top:3px}
+.wb-continue{width:100%;padding:13px;border-radius:var(--radius-sm);border:none;background:var(--gold);color:var(--navy);font-size:14px;font-weight:700;cursor:pointer;margin-top:12px}
+.wb-divider{text-align:center;font-size:12px;color:rgba(255,255,255,.4);margin:20px 0 16px;position:relative;display:none;width:100%;max-width:360px}
+.wb-divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(255,255,255,.15)}
+.wb-divider span{background:transparent;position:relative;padding:0 10px}
+.login-box{width:100%;max-width:360px}
+.login-box label{display:block;font-size:12px;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px}
+.login-box input{width:100%;padding:14px 16px;border-radius:var(--radius-sm);border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.10);color:#fff;font-size:15px;outline:none;margin-bottom:14px;transition:border-color .15s}
+.login-box input::placeholder{color:rgba(255,255,255,.35)}
+.login-box input:focus{border-color:var(--gold)}
+.login-btn{width:100%;padding:15px;border-radius:var(--radius-sm);border:none;background:var(--gold);color:var(--navy);font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
+.login-error{font-size:13px;color:#ffb3b3;margin-top:10px;text-align:center;min-height:20px}
+.splash-footer{margin-top:28px;font-size:11px;color:rgba(255,255,255,.35);text-align:center;max-width:300px;line-height:1.6}
+
+/* APP SHELL */
+#app{display:none;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;background:#fff}
+.app-header{background:var(--navy);padding:14px 16px 12px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.header-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.header-name{font-size:15px;font-weight:600;color:#fff}
+.header-sub{font-size:11px;color:rgba(255,255,255,.55);margin-top:1px}
+.header-switch{margin-left:auto;font-size:11px;color:rgba(255,255,255,.55);cursor:pointer;padding:6px 10px;border:1px solid rgba(255,255,255,.2);border-radius:20px;white-space:nowrap}
+.anxiety-pill{margin:12px 16px 0;padding:10px 16px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.anxiety-pill .pill-label{font-size:12px;font-weight:500}
+.anxiety-pill .pill-score{font-size:18px;font-weight:700}
+.anxiety-low{background:var(--green-bg);color:var(--green)}
+.anxiety-mod{background:var(--amber-bg);color:var(--amber)}
+.anxiety-high{background:var(--red-bg);color:var(--red)}
+.bottom-nav{display:flex;border-top:1px solid var(--gray-200);background:#fff;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom);overflow-x:auto}
+.nav-item{flex:1;min-width:54px;display:flex;flex-direction:column;align-items:center;padding:8px 2px 6px;cursor:pointer;color:var(--gray-400);font-size:8px;letter-spacing:.02em;gap:3px;transition:color .15s;white-space:nowrap}
+.nav-item svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-item.active{color:var(--navy)}
+.nav-item.sos-nav{color:var(--red)}
+.pages{flex:1;overflow-y:auto}
+.page{display:none;padding:16px;padding-bottom:32px}
+.page.active{display:block}
+.card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card-title{font-size:12px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px}
+.slider-group{margin-bottom:16px}
+.slider-label{display:flex;justify-content:space-between;font-size:14px;color:var(--gray-800);margin-bottom:8px}
+.slider-label span{font-weight:700;color:var(--navy);min-width:28px;text-align:right}
+input[type=range]{width:100%;height:6px;border-radius:4px;outline:none;cursor:pointer;-webkit-appearance:none;background:var(--gray-200)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--navy);cursor:pointer;border:3px solid #fff;box-shadow:0 0 0 2px var(--navy)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--navy);cursor:pointer;border:3px solid #fff}
+.slider-hints{display:flex;justify-content:space-between;font-size:10px;color:var(--gray-400);margin-top:4px}
+.mood-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mood-btn{padding:12px 6px;border-radius:var(--radius-sm);border:1.5px solid var(--gray-200);text-align:center;cursor:pointer;background:var(--gray-100);transition:all .15s;font-size:24px}
+.mood-btn div{font-size:10px;color:var(--gray-600);margin-top:4px}
+.mood-btn.selected{border-color:var(--navy);background:#e8f0fc}
+.btn-primary{width:100%;padding:14px;border-radius:var(--radius);border:none;background:var(--navy);color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:6px;transition:background .15s}
+.btn-primary:active{transform:scale(.98)}
+.sos-btn{width:100%;padding:18px;border-radius:var(--radius);border:none;background:var(--red);color:#fff;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
+textarea{width:100%;padding:12px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-size:14px;color:var(--gray-800);background:var(--gray-100);resize:none;font-family:inherit;line-height:1.6;transition:border-color .15s;min-height:100px}
+textarea:focus{outline:none;border-color:var(--navy);background:#fff}
+.prompt-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.prompt-chip{padding:6px 12px;border-radius:20px;border:1px solid var(--gray-200);font-size:12px;color:var(--gray-600);cursor:pointer;background:var(--gray-100);transition:all .15s}
+.prompt-chip:hover{border-color:var(--navy);color:var(--navy);background:#e8f0fc}
+.history-item{border-left:3px solid var(--navy);padding:10px 12px;margin-bottom:8px;background:var(--gray-100);border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+.history-time{font-size:11px;color:var(--gray-400)}
+.history-vals{font-size:13px;color:var(--gray-800);margin-top:3px}
+.history-mood{font-size:11px;color:var(--gray-600);margin-top:2px}
+.reflect-item{border-left:3px solid var(--green);padding:10px 12px;margin-bottom:8px;background:var(--green-bg);border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+.reflect-text{font-size:13px;color:var(--gray-800);line-height:1.5}
+.reflect-meta{font-size:11px;color:var(--gray-400);margin-top:4px}
+.tip-box{background:#eef3fb;border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:12px}
+.tip-box h4{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:6px}
+.tip-box p{font-size:13px;color:var(--gray-600);line-height:1.6}
+.breath-ring{width:120px;height:120px;border-radius:50%;margin:20px auto;background:radial-gradient(circle,#c8ddf7 0%,#e8f0fc 60%,transparent 100%);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--navy)}
+.breath-ring.breathing{animation:breathe 8s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.22)}}
+.breath-label{text-align:center;font-size:14px;font-weight:500;color:var(--navy);min-height:24px}
+.breath-toggle{display:block;margin:12px auto 0;padding:10px 28px;border-radius:24px;background:var(--navy);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer}
+.section-label{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.07em;margin:16px 0 10px}
+.empty{text-align:center;padding:32px 16px;color:var(--gray-400);font-size:14px}
+.empty-icon{font-size:36px;margin-bottom:10px}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--gray-800);color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;font-weight:500;opacity:0;transition:opacity .25s;pointer-events:none;z-index:999;white-space:nowrap}
+#toast.show{opacity:1}
+
+/* COGNITIVE GAMES — shared */
+.cog-game-wrap{display:none}
+.cog-game-wrap.active{display:block}
+.game-header{background:var(--navy);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.gh-level{font-size:11px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.08em;text-transform:uppercase}
+.gh-timer{font-size:22px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+.gh-score-box{font-size:13px;color:rgba(255,255,255,.75);text-align:right}
+.game-progress{height:4px;background:rgba(255,255,255,.15)}
+.game-progress-bar{height:4px;background:var(--gold);transition:width .1s linear}
+.countdown-overlay{position:absolute;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10}
+.countdown-num{font-size:80px;font-weight:900;color:var(--gold);animation:popIn .4s ease}
+.countdown-txt{font-size:14px;color:rgba(255,255,255,.6);margin-top:8px}
+@keyframes popIn{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+.result-hero{text-align:center;padding:28px 20px 20px}
+.result-score-ring{width:130px;height:130px;border-radius:50%;background:conic-gradient(#7b3fe4 0%,var(--gray-200) 0%);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.result-score-inner{width:100px;height:100px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.result-score-num{font-size:30px;font-weight:800}
+.result-score-lbl{font-size:10px;color:var(--gray-400);font-weight:600}
+.result-interp{font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:6px}
+.result-interp-sub{font-size:13px;color:var(--gray-600);line-height:1.5;max-width:280px;margin:0 auto}
+.result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px 16px}
+.result-stat{background:var(--gray-100);border-radius:var(--radius-sm);padding:12px 8px;text-align:center}
+.result-stat .rs-num{font-size:20px;font-weight:700;color:var(--navy)}
+.result-stat .rs-lbl{font-size:10px;color:var(--gray-400);margin-top:3px;font-weight:600}
+.result-btns{display:flex;gap:10px;padding:0 16px 24px}
+.result-btns button{flex:1;padding:13px;border-radius:var(--radius);border:none;font-size:13px;font-weight:600;cursor:pointer}
+
+/* STROOP */
+.stroop-arena{min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
+.stroop-instruction{font-size:12px;font-weight:600;color:var(--gray-400);letter-spacing:.07em;text-transform:uppercase;margin-bottom:20px}
+.stroop-word{font-size:52px;font-weight:800;letter-spacing:-1px;user-select:none}
+.stroop-word.flash-wrong{animation:flashW .3s ease}
+.stroop-word.flash-right{animation:flashR .25s ease}
+@keyframes flashW{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes flashR{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+.distractor{position:absolute;font-size:14px;font-weight:700;opacity:.18;pointer-events:none;animation:drift linear infinite}
+@keyframes drift{0%{transform:translateY(0) rotate(0deg)}100%{transform:translateY(-200px) rotate(20deg)}}
+.answer-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 20px}
+.answer-btn{padding:18px 8px;border-radius:var(--radius);border:none;font-size:15px;font-weight:700;cursor:pointer;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.18);text-transform:uppercase;letter-spacing:.04em}
+.answer-btn:active{transform:scale(.95)}
+.feedback-bar{height:6px;margin:0 16px 4px;border-radius:4px;background:var(--gray-200);overflow:hidden}
+.feedback-fill{height:100%;border-radius:4px}
+.level-cards{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.level-card{border-radius:var(--radius);padding:14px 16px;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.level-card:active{transform:scale(.98)}
+.level-card .lc-badge{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.level-card .lc-name{font-size:16px;font-weight:700;margin-bottom:3px}
+.level-card .lc-desc{font-size:12px;opacity:.8;line-height:1.4}
+.level-card.lv1{background:#eafaf1;border-color:#a8dfc2;color:#1a5c38}
+.level-card.lv2{background:#fef9e7;border-color:#f5d06e;color:#7a5000}
+.level-card.lv3{background:#fdf2f2;border-color:#f0a0a0;color:#8b1a1a}
+.level-card.selected{box-shadow:0 0 0 3px rgba(123,63,228,.35);border-color:var(--purple)}
+
+/* DIGIT SPAN */
+.digit-display{min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
+.digit-big{font-size:80px;font-weight:900;color:var(--navy);letter-spacing:-2px;animation:popIn .3s ease}
+.digit-prompt{font-size:15px;color:var(--gray-600);margin-bottom:20px;text-align:center;line-height:1.5}
+.digit-input-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:0 16px 8px}
+.digit-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 20px}
+.digit-key{padding:16px;border-radius:var(--radius-sm);border:1.5px solid var(--gray-200);font-size:22px;font-weight:700;cursor:pointer;background:var(--gray-100);text-align:center;transition:all .12s;color:var(--gray-800)}
+.digit-key:active{background:var(--navy);color:#fff;transform:scale(.94)}
+.digit-key.del{background:#fdf2f2;color:var(--red);border-color:#f5c0c0}
+.digit-key.submit-key{background:var(--navy);color:#fff;grid-column:span 3;font-size:15px;font-weight:700}
+.digit-answer-chip{width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700}
+.digit-level-badge{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px}
+
+/* GO NO-GO */
+.gng-arena{min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
+.gng-circle{width:140px;height:140px;border-radius:50%;transition:all .15s;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:#fff;user-select:none;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.gng-circle:active{transform:scale(.93)}
+.gng-hint{font-size:13px;color:var(--gray-600);margin-top:20px;text-align:center}
+.gng-flash-correct{animation:gngRight .35s ease}
+.gng-flash-wrong{animation:gngWrong .35s ease}
+@keyframes gngRight{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes gngWrong{0%,100%{opacity:1;transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.gng-score-row{display:flex;gap:16px;justify-content:center;margin-top:16px}
+.gng-score-box{text-align:center;padding:10px 18px;background:var(--gray-100);border-radius:var(--radius-sm)}
+.gng-score-box .gsn{font-size:22px;font-weight:700;color:var(--navy)}
+.gng-score-box .gsl{font-size:11px;color:var(--gray-400);font-weight:600}
+
+/* MENTAL ROTATION */
+.rot-arena{padding:16px;display:flex;flex-direction:column;align-items:center}
+.rot-target-label{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.rot-target{margin-bottom:20px}
+.rot-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.rot-option{border-radius:var(--radius-sm);border:2px solid var(--gray-200);padding:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--gray-100);transition:all .15s;min-height:100px}
+.rot-option:active{transform:scale(.96)}
+.rot-option.selected-correct{border-color:var(--green);background:var(--green-bg)}
+.rot-option.selected-wrong{border-color:var(--red);background:var(--red-bg)}
+.rot-timer-bar{width:100%;height:5px;background:var(--gray-200);border-radius:3px;margin:10px 0 16px;overflow:hidden}
+.rot-timer-fill{height:100%;background:var(--purple);border-radius:3px}
+.rot-trial-info{font-size:12px;color:var(--gray-400);margin-bottom:12px}
+
+/* PROCESSING SPEED */
+.ps-arena{min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden;background:var(--gray-100);border-radius:var(--radius);margin:16px;cursor:pointer;user-select:none}
+.ps-target{width:80px;height:80px;border-radius:50%;position:absolute;transition:none;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.ps-instruction{font-size:14px;font-weight:600;color:var(--gray-600);text-align:center;margin-bottom:8px}
+.ps-tap-hint{font-size:32px;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.7}}
+.ps-stats-row{display:flex;gap:12px;justify-content:center;padding:0 16px;margin-bottom:16px}
+.ps-stat{text-align:center;flex:1;background:var(--gray-100);border-radius:var(--radius-sm);padding:10px 6px}
+.ps-stat .psn{font-size:20px;font-weight:700;color:var(--navy)}
+.ps-stat .psl{font-size:10px;color:var(--gray-400);font-weight:600}
+
+/* COGNITIVE DASHBOARD */
+.dash-header-card{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);border-radius:var(--radius);padding:18px;margin-bottom:14px;color:#fff}
+.dash-header-card h3{font-size:16px;font-weight:700;margin-bottom:4px}
+.dash-header-card p{font-size:12px;color:rgba(255,255,255,.65);line-height:1.5}
+.readiness-score{text-align:center;margin:8px 0}
+.readiness-num{font-size:48px;font-weight:900;color:var(--gold)}
+.readiness-lbl{font-size:12px;color:rgba(255,255,255,.65);letter-spacing:.06em;text-transform:uppercase}
+.domain-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.domain-card{border-radius:var(--radius-sm);padding:14px 12px;border:1.5px solid var(--gray-200);background:#fff}
+.domain-card .dc-icon{font-size:22px;margin-bottom:6px}
+.domain-card .dc-name{font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.domain-card .dc-score{font-size:24px;font-weight:800}
+.domain-card .dc-time{font-size:10px;color:var(--gray-400);margin-top:2px}
+.domain-card .dc-bar{height:4px;border-radius:2px;background:var(--gray-200);margin-top:8px;overflow:hidden}
+.domain-card .dc-fill{height:100%;border-radius:2px}
+.flag-card{border-left:4px solid var(--red);background:var(--red-bg);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 14px;margin-bottom:8px}
+.flag-card .fc-title{font-size:13px;font-weight:700;color:var(--red)}
+.flag-card .fc-desc{font-size:12px;color:var(--gray-600);margin-top:3px;line-height:1.4}
+.trend-mini{display:flex;align-items:flex-end;gap:3px;height:32px;margin-top:6px}
+.trend-bar{width:8px;border-radius:2px;background:var(--gray-200);transition:height .3s}
+
+/* FOCUS HISTORY */
+.focus-hist-item{border-left:3px solid var(--purple);padding:10px 12px;margin-bottom:8px;background:var(--purple-bg);border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+.cog-test-card{display:flex;align-items:center;gap:14px;padding:14px;border-radius:var(--radius);border:1.5px solid var(--gray-200);background:#fff;margin-bottom:10px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow)}
+.cog-test-card:active{transform:scale(.98)}
+.cog-test-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.cog-test-name{font-size:15px;font-weight:700;color:var(--gray-800)}
+.cog-test-desc{font-size:12px;color:var(--gray-400);margin-top:2px}
+.cog-test-score{margin-left:auto;text-align:right;flex-shrink:0}
+.cog-test-score .cts{font-size:20px;font-weight:800}
+.cog-test-score .ctl{font-size:10px;color:var(--gray-400);font-weight:600}
+
+@media(min-width:480px){#app{box-shadow:0 0 40px rgba(0,0,0,.12)}html{background:#d8dde6}}
+</style>
+</head>
+<body>
+
+<!-- ═══ SPLASH ═══ -->
+<div id="splash">
+  <div class="splash-logo">MY</div>
+  <div class="splash-title">MindReady</div>
+  <div class="splash-sub">Malaysia · Commonwealth Games 2026<br>Sport Psychology Support</div>
+  <div class="welcome-back" id="welcome-back">
+    <div class="wb-name" id="wb-name"></div>
+    <div class="wb-sub">Welcome back! Your data is saved and ready.</div>
+    <button class="wb-continue" onclick="continueSession()">Continue as me →</button>
+  </div>
+  <div class="wb-divider" id="wb-divider"><span>or login as someone else</span></div>
+  <div class="login-box" id="login-box">
+    <label>Your full name</label>
+    <input type="text" id="inp-name" placeholder="e.g. Anis Avrinda" autocomplete="name" autocorrect="off">
+    <label>Team PIN</label>
+    <input type="password" id="inp-pin" placeholder="Enter team PIN" maxlength="10" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Enter →</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+  <div class="splash-footer">Your responses are private and shared only with your sport psychologist, Mira.<br>Your name is saved on this device so you never have to type it again.</div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app">
+  <div class="app-header">
+    <div class="header-av" id="hdr-av"></div>
+    <div><div class="header-name" id="hdr-name"></div><div class="header-sub">Malaysia · CWG 2026</div></div>
+    <div class="header-switch" onclick="confirmSwitch()">Switch ↩</div>
+  </div>
+  <div class="anxiety-pill anxiety-low" id="anxiety-pill">
+    <div><div class="pill-label" id="pill-label">Anxiety level</div><div style="font-size:11px;opacity:.7" id="pill-time">Not checked in yet</div></div>
+    <div class="pill-score" id="pill-score">—</div>
+  </div>
+
+  <div class="pages">
+
+    <!-- ── CHECK-IN ── -->
+    <div class="page active" id="page-checkin">
+      <div class="card">
+        <div class="card-title">Cognitive anxiety</div>
+        <div class="slider-group"><div class="slider-label">Worry / racing thoughts <span id="cog-v">5</span></div><input type="range" min="1" max="10" value="5" id="cog" oninput="sv('cog')"><div class="slider-hints"><span>1 — None</span><span>10 — Extreme</span></div></div>
+        <div class="slider-group"><div class="slider-label">Concentration <span id="conc-v">5</span></div><input type="range" min="1" max="10" value="5" id="conc" oninput="sv('conc')"><div class="slider-hints"><span>1 — Scattered</span><span>10 — Focused</span></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Somatic anxiety</div>
+        <div class="slider-group"><div class="slider-label">Physical tension <span id="som-v">5</span></div><input type="range" min="1" max="10" value="5" id="som" oninput="sv('som')"><div class="slider-hints"><span>1 — Relaxed</span><span>10 — Very tense</span></div></div>
+        <div class="slider-group"><div class="slider-label">Nervousness / heart rate <span id="hr-v">5</span></div><input type="range" min="1" max="10" value="5" id="hr" oninput="sv('hr')"><div class="slider-hints"><span>1 — Calm</span><span>10 — Very nervous</span></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Self-confidence</div>
+        <div class="slider-group"><div class="slider-label">Belief in performance today <span id="conf-v">7</span></div><input type="range" min="1" max="10" value="7" id="conf" oninput="sv('conf')"><div class="slider-hints"><span>1 — Very low</span><span>10 — Very high</span></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">How am I feeling right now?</div>
+        <div class="mood-grid">
+          <div class="mood-btn" onclick="pickMood(this,'Great 😄')">😄<div>Great</div></div>
+          <div class="mood-btn" onclick="pickMood(this,'Good 🙂')">🙂<div>Good</div></div>
+          <div class="mood-btn" onclick="pickMood(this,'Okay 😐')">😐<div>Okay</div></div>
+          <div class="mood-btn" onclick="pickMood(this,'Tense 😬')">😬<div>Tense</div></div>
+          <div class="mood-btn" onclick="pickMood(this,'Low 😔')">😔<div>Low</div></div>
+          <div class="mood-btn" onclick="pickMood(this,'Overwhelmed 😰')">😰<div>Overwhelmed</div></div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="saveCheckin()">Save check-in</button>
+    </div>
+
+    <!-- ── REFLECT ── -->
+    <div class="page" id="page-reflect">
+      <div class="card">
+        <div class="card-title">Daily reflection</div>
+        <div class="prompt-chips">
+          <div class="prompt-chip" onclick="setP('What went well today?')">What went well?</div>
+          <div class="prompt-chip" onclick="setP('What challenge did I face and how did I handle it?')">Challenges?</div>
+          <div class="prompt-chip" onclick="setP('What would I do differently next time?')">Next time?</div>
+          <div class="prompt-chip" onclick="setP('How did I manage my anxiety today?')">Anxiety control?</div>
+          <div class="prompt-chip" onclick="setP('What am I proud of from today?')">Proud moment?</div>
+          <div class="prompt-chip" onclick="setP('How is my body feeling right now?')">Body check?</div>
+        </div>
+        <textarea id="reflect-txt" placeholder="Write freely — only Mira can see this."></textarea>
+        <div class="slider-group" style="margin-top:14px;margin-bottom:0">
+          <div class="slider-label">Overall satisfaction with today <span id="sat-v">7</span>/10</div>
+          <input type="range" min="1" max="10" value="7" id="sat" oninput="sv('sat')">
+        </div>
+      </div>
+      <button class="btn-primary" onclick="saveReflect()">Save reflection</button>
+      <div class="section-label">Past reflections</div>
+      <div id="reflect-list"><div class="empty"><div class="empty-icon">📝</div>No reflections yet.</div></div>
+    </div>
+
+    <!-- ── TRACK ── -->
+    <div class="page" id="page-history">
+      <div class="card"><div class="card-title">Anxiety trend</div><canvas id="trend-chart" height="140"></canvas></div>
+      <div class="section-label">Check-in log</div>
+      <div id="history-list"><div class="empty"><div class="empty-icon">📊</div>No check-ins yet.</div></div>
+    </div>
+
+    <!-- ── COGNITIVE TESTS ── -->
+    <div class="page" id="page-cog">
+
+      <!-- TEST MENU -->
+      <div id="cog-menu">
+        <div class="card" style="border-color:#e0d0ff;margin-bottom:16px">
+          <div class="card-title" style="color:var(--purple)">🧠 Cognitive Readiness Battery</div>
+          <p style="font-size:13px;color:var(--gray-600);line-height:1.6">Five tests measuring different brain functions. Do one or all before competing. Each takes 1–3 minutes.</p>
+        </div>
+
+        <div class="cog-test-card" onclick="launchCogTest('stroop')">
+          <div class="cog-test-icon" style="background:#fdf2f2">🎨</div>
+          <div><div class="cog-test-name">Stroop Test</div><div class="cog-test-desc">Attention & distraction filtering · 3 min</div></div>
+          <div class="cog-test-score" id="menu-score-stroop"><div class="cts" style="color:var(--gray-300)">—</div><div class="ctl">FOCUS</div></div>
+        </div>
+        <div class="cog-test-card" onclick="launchCogTest('digit')">
+          <div class="cog-test-icon" style="background:#e8f0fc">🔢</div>
+          <div><div class="cog-test-name">Digit Span</div><div class="cog-test-desc">Working memory · 2 min</div></div>
+          <div class="cog-test-score" id="menu-score-digit"><div class="cts" style="color:var(--gray-300)">—</div><div class="ctl">MEMORY</div></div>
+        </div>
+        <div class="cog-test-card" onclick="launchCogTest('ps')">
+          <div class="cog-test-icon" style="background:#e0f2fe">⚡</div>
+          <div><div class="cog-test-name">Tap the Target</div><div class="cog-test-desc">Processing speed & fatigue · 90 sec</div></div>
+          <div class="cog-test-score" id="menu-score-ps"><div class="cts" style="color:var(--gray-300)">—</div><div class="ctl">SPEED</div></div>
+        </div>
+        <div class="cog-test-card" onclick="launchCogTest('gng')">
+          <div class="cog-test-icon" style="background:#eafaf1">🛑</div>
+          <div><div class="cog-test-name">Go / No-Go</div><div class="cog-test-desc">Impulse control · 2 min</div></div>
+          <div class="cog-test-score" id="menu-score-gng"><div class="cts" style="color:var(--gray-300)">—</div><div class="ctl">CONTROL</div></div>
+        </div>
+        <div class="cog-test-card" onclick="launchCogTest('rot')">
+          <div class="cog-test-icon" style="background:#fff9e6">🔷</div>
+          <div><div class="cog-test-name">Mental Rotation</div><div class="cog-test-desc">Visual-spatial reasoning · 2 min</div></div>
+          <div class="cog-test-score" id="menu-score-rot"><div class="cts" style="color:var(--gray-300)">—</div><div class="ctl">SPATIAL</div></div>
+        </div>
+      </div>
+
+      <!-- STROOP GAME -->
+      <div id="cog-stroop" class="cog-game-wrap">
+        <div id="st-lobby">
+          <div class="level-cards" style="margin-top:0">
+            <div class="level-card lv1" onclick="selectStroopLevel(1,this)"><div class="lc-badge">Level 1 · 30 trials</div><div class="lc-name">Clear Mind</div><div class="lc-desc">Standard pace, good baseline.</div></div>
+            <div class="level-card lv2" onclick="selectStroopLevel(2,this)"><div class="lc-badge">Level 2 · 40 trials</div><div class="lc-name">Under Pressure</div><div class="lc-desc">Faster time window per trial.</div></div>
+            <div class="level-card lv3" onclick="selectStroopLevel(3,this)"><div class="lc-badge">Level 3 · 40 trials</div><div class="lc-name">Competition Noise</div><div class="lc-desc">Floating distractors simulate crowd pressure.</div></div>
+          </div>
+          <button class="btn-primary" style="background:var(--purple);margin-top:16px" onclick="stroopStart()">Start →</button>
+          <button class="btn-primary" style="background:var(--gray-200);color:var(--gray-800);margin-top:8px" onclick="backToCogMenu()">← Back</button>
+        </div>
+        <div id="st-game" style="display:none">
+          <div class="game-header">
+            <div><div class="gh-level" id="st-level-lbl">LEVEL 1</div><div class="digit-level-badge" id="st-trial-lbl">Trial 1/30</div></div>
+            <div class="gh-timer" id="st-timer">3:00</div>
+            <div class="gh-score-box"><div style="font-size:20px;font-weight:700;color:#fff" id="st-correct">0</div><div style="font-size:10px;color:rgba(255,255,255,.5)">correct</div></div>
+          </div>
+          <div class="game-progress"><div class="game-progress-bar" id="st-progress" style="width:100%"></div></div>
+          <div class="stroop-arena" id="st-arena">
+            <div class="countdown-overlay" id="st-countdown"><div class="countdown-num" id="st-cd-num">3</div><div class="countdown-txt">TAP THE INK COLOUR</div></div>
+            <div class="stroop-instruction">What COLOUR is the ink?</div>
+            <div class="stroop-word" id="st-word">READY</div>
+          </div>
+          <div class="feedback-bar"><div class="feedback-fill" id="st-fill" style="width:100%;background:var(--purple)"></div></div>
+          <div class="answer-btns" id="st-btns"></div>
+        </div>
+        <div id="st-results" style="display:none">
+          <div class="result-hero"><div class="result-score-ring" id="st-ring"><div class="result-score-inner"><div class="result-score-num" id="st-rnum">--</div><div class="result-score-lbl">FOCUS SCORE</div></div></div><div class="result-interp" id="st-rinterp">--</div><div class="result-interp-sub" id="st-rsub">--</div></div>
+          <div class="result-stats"><div class="result-stat"><div class="rs-num" id="st-racc">--%</div><div class="rs-lbl">ACCURACY</div></div><div class="result-stat"><div class="rs-num" id="st-rrt">--ms</div><div class="rs-lbl">AVG RT</div></div><div class="result-stat"><div class="rs-num" id="st-rlvl">L1</div><div class="rs-lbl">LEVEL</div></div></div>
+          <div class="result-btns"><button style="background:var(--gray-100);color:var(--gray-800)" onclick="backToCogMenu()">← Menu</button><button style="background:var(--purple);color:#fff" onclick="stroopRetry()">Retry</button><button style="background:var(--navy);color:#fff" onclick="shareCogResult('stroop')">📲 Mira</button></div>
+        </div>
+      </div>
+
+      <!-- DIGIT SPAN GAME -->
+      <div id="cog-digit" class="cog-game-wrap">
+        <div id="ds-lobby">
+          <div class="card"><div class="card-title" style="color:var(--navy)">🔢 Working Memory — Digit Span</div><p style="font-size:13px;color:var(--gray-600);line-height:1.6">Watch the digits appear one by one, then type them back in the same order. Sequences get longer as you progress. Tests your mental workspace — essential for holding game plans under pressure.</p></div>
+          <button class="btn-primary" style="background:var(--navy)" onclick="dsStart()">Start test →</button>
+          <button class="btn-primary" style="background:var(--gray-200);color:var(--gray-800);margin-top:8px" onclick="backToCogMenu()">← Back</button>
+        </div>
+        <div id="ds-game" style="display:none">
+          <div class="game-header">
+            <div><div class="gh-level" id="ds-level-lbl">SEQUENCE 1</div><div class="digit-level-badge" id="ds-span-lbl">3 digits</div></div>
+            <div class="gh-timer" id="ds-phase">Watch...</div>
+            <div class="gh-score-box"><div style="font-size:20px;font-weight:700;color:#fff" id="ds-streak">0</div><div style="font-size:10px;color:rgba(255,255,255,.5)">streak</div></div>
+          </div>
+          <div class="digit-display" id="ds-display">
+            <div class="digit-prompt" id="ds-prompt">Get ready...</div>
+            <div class="digit-big" id="ds-digit" style="display:none"></div>
+          </div>
+          <div class="digit-input-row" id="ds-input-row" style="display:none"></div>
+          <div class="digit-pad" id="ds-pad" style="display:none">
+            <div class="digit-key" onclick="dsPad(1)">1</div><div class="digit-key" onclick="dsPad(2)">2</div><div class="digit-key" onclick="dsPad(3)">3</div>
+            <div class="digit-key" onclick="dsPad(4)">4</div><div class="digit-key" onclick="dsPad(5)">5</div><div class="digit-key" onclick="dsPad(6)">6</div>
+            <div class="digit-key" onclick="dsPad(7)">7</div><div class="digit-key" onclick="dsPad(8)">8</div><div class="digit-key" onclick="dsPad(9)">9</div>
+            <div class="digit-key del" onclick="dsDel()">⌫</div><div class="digit-key" onclick="dsPad(0)">0</div>
+            <div class="digit-key submit-key" onclick="dsSubmit()">Submit ✓</div>
+          </div>
+        </div>
+        <div id="ds-results" style="display:none">
+          <div class="result-hero"><div class="result-score-ring" id="ds-ring"><div class="result-score-inner"><div class="result-score-num" id="ds-rnum">--</div><div class="result-score-lbl">MEMORY SCORE</div></div></div><div class="result-interp" id="ds-rinterp">--</div><div class="result-interp-sub" id="ds-rsub">--</div></div>
+          <div class="result-stats"><div class="result-stat"><div class="rs-num" id="ds-rspan">--</div><div class="rs-lbl">MAX SPAN</div></div><div class="result-stat"><div class="rs-num" id="ds-racc">--%</div><div class="rs-lbl">ACCURACY</div></div><div class="result-stat"><div class="rs-num" id="ds-rtrials">--</div><div class="rs-lbl">TRIALS</div></div></div>
+          <div class="result-btns"><button style="background:var(--gray-100);color:var(--gray-800)" onclick="backToCogMenu()">← Menu</button><button style="background:var(--navy);color:#fff" onclick="dsStart()">Retry</button><button style="background:var(--navy);color:#fff" onclick="shareCogResult('digit')">📲 Mira</button></div>
+        </div>
+      </div>
+
+      <!-- PROCESSING SPEED -->
+      <div id="cog-ps" class="cog-game-wrap">
+        <div id="ps-lobby">
+          <div class="card"><div class="card-title" style="color:var(--teal)">⚡ Processing Speed — Tap the Target</div><p style="font-size:13px;color:var(--gray-600);line-height:1.6">Tap the glowing circle as fast as you can each time it appears. 90 seconds. Reaction time drops when you're fatigued, stressed, or sleep-deprived — making this a quick readiness check.</p></div>
+          <button class="btn-primary" style="background:var(--teal)" onclick="psStart()">Start test →</button>
+          <button class="btn-primary" style="background:var(--gray-200);color:var(--gray-800);margin-top:8px" onclick="backToCogMenu()">← Back</button>
+        </div>
+        <div id="ps-game" style="display:none">
+          <div class="game-header" style="background:var(--teal)">
+            <div><div class="gh-level">TAP THE TARGET</div><div class="digit-level-badge" id="ps-hits-lbl">0 hits</div></div>
+            <div class="gh-timer" id="ps-timer">1:30</div>
+            <div class="gh-score-box"><div style="font-size:20px;font-weight:700;color:#fff" id="ps-hits">0</div><div style="font-size:10px;color:rgba(255,255,255,.5)">taps</div></div>
+          </div>
+          <div class="game-progress" style="background:rgba(0,0,0,.1)"><div class="game-progress-bar" id="ps-progress" style="width:100%;background:var(--teal)"></div></div>
+          <div class="ps-arena" id="ps-arena" onclick="psTapArena(event)">
+            <div class="countdown-overlay" id="ps-countdown" style="border-radius:var(--radius)"><div class="countdown-num" id="ps-cd-num">3</div><div class="countdown-txt">TAP EVERY TARGET</div></div>
+            <div class="ps-instruction" id="ps-instruction">Tap the circle when it appears!</div>
+            <div class="ps-tap-hint" id="ps-tap-hint">👆</div>
+            <div class="ps-target" id="ps-target" style="display:none"></div>
+          </div>
+          <div class="ps-stats-row">
+            <div class="ps-stat"><div class="psn" id="ps-avg-rt">--</div><div class="psl">AVG RT (ms)</div></div>
+            <div class="ps-stat"><div class="psn" id="ps-best-rt">--</div><div class="psl">BEST RT (ms)</div></div>
+            <div class="ps-stat"><div class="psn" id="ps-misses">0</div><div class="psl">MISSES</div></div>
+          </div>
+        </div>
+        <div id="ps-results" style="display:none">
+          <div class="result-hero"><div class="result-score-ring" id="ps-ring"><div class="result-score-inner"><div class="result-score-num" id="ps-rnum">--</div><div class="result-score-lbl">SPEED SCORE</div></div></div><div class="result-interp" id="ps-rinterp">--</div><div class="result-interp-sub" id="ps-rsub">--</div></div>
+          <div class="result-stats"><div class="result-stat"><div class="rs-num" id="ps-ravg">--ms</div><div class="rs-lbl">AVG RT</div></div><div class="result-stat"><div class="rs-num" id="ps-rbest">--ms</div><div class="rs-lbl">BEST RT</div></div><div class="result-stat"><div class="rs-num" id="ps-rhits">--</div><div class="rs-lbl">HITS</div></div></div>
+          <div class="result-btns"><button style="background:var(--gray-100);color:var(--gray-800)" onclick="backToCogMenu()">← Menu</button><button style="background:var(--teal);color:#fff" onclick="psStart()">Retry</button><button style="background:var(--navy);color:#fff" onclick="shareCogResult('ps')">📲 Mira</button></div>
+        </div>
+      </div>
+
+      <!-- GO NO-GO -->
+      <div id="cog-gng" class="cog-game-wrap">
+        <div id="gng-lobby">
+          <div class="card"><div class="card-title" style="color:var(--green)">🛑 Impulse Control — Go / No-Go</div><p style="font-size:13px;color:var(--gray-600);line-height:1.6">TAP the circle when it's <strong style="color:var(--green)">GREEN</strong>. Do NOT tap when it's <strong style="color:var(--red)">RED</strong>. 40 trials, ~2 minutes. Tests your ability to inhibit impulses — critical in precision sports where holding a shot matters as much as releasing it.</p></div>
+          <button class="btn-primary" style="background:var(--green)" onclick="gngStart()">Start test →</button>
+          <button class="btn-primary" style="background:var(--gray-200);color:var(--gray-800);margin-top:8px" onclick="backToCogMenu()">← Back</button>
+        </div>
+        <div id="gng-game" style="display:none">
+          <div class="game-header" style="background:var(--green)">
+            <div><div class="gh-level">GO / NO-GO</div><div class="digit-level-badge" id="gng-trial-lbl">Trial 1 / 40</div></div>
+            <div class="gh-timer" id="gng-timer">2:00</div>
+            <div class="gh-score-box"><div style="font-size:20px;font-weight:700;color:#fff" id="gng-score-disp">0</div><div style="font-size:10px;color:rgba(255,255,255,.5)">score</div></div>
+          </div>
+          <div class="game-progress"><div class="game-progress-bar" id="gng-progress" style="width:100%;background:var(--green)"></div></div>
+          <div class="gng-arena">
+            <div class="countdown-overlay" id="gng-countdown"><div class="countdown-num" id="gng-cd-num">3</div><div class="countdown-txt">GREEN = TAP · RED = HOLD</div></div>
+            <div class="gng-circle" id="gng-circle" onclick="gngTap()" style="background:var(--gray-200)">?</div>
+            <div class="gng-hint" id="gng-hint">Waiting...</div>
+          </div>
+          <div class="gng-score-row">
+            <div class="gng-score-box"><div class="gsn" id="gng-go-correct">0</div><div class="gsl">GO ✓</div></div>
+            <div class="gng-score-box"><div class="gsn" id="gng-nogo-correct">0</div><div class="gsl">NO-GO ✓</div></div>
+            <div class="gng-score-box"><div class="gsn" id="gng-errors">0</div><div class="gsl">ERRORS</div></div>
+          </div>
+        </div>
+        <div id="gng-results" style="display:none">
+          <div class="result-hero"><div class="result-score-ring" id="gng-ring"><div class="result-score-inner"><div class="result-score-num" id="gng-rnum">--</div><div class="result-score-lbl">CONTROL SCORE</div></div></div><div class="result-interp" id="gng-rinterp">--</div><div class="result-interp-sub" id="gng-rsub">--</div></div>
+          <div class="result-stats"><div class="result-stat"><div class="rs-num" id="gng-racc">--%</div><div class="rs-lbl">ACCURACY</div></div><div class="result-stat"><div class="rs-num" id="gng-rerr">--</div><div class="rs-lbl">ERRORS</div></div><div class="result-stat"><div class="rs-num" id="gng-rrt">--ms</div><div class="rs-lbl">AVG RT</div></div></div>
+          <div class="result-btns"><button style="background:var(--gray-100);color:var(--gray-800)" onclick="backToCogMenu()">← Menu</button><button style="background:var(--green);color:#fff" onclick="gngStart()">Retry</button><button style="background:var(--navy);color:#fff" onclick="shareCogResult('gng')">📲 Mira</button></div>
+        </div>
+      </div>
+
+      <!-- MENTAL ROTATION -->
+      <div id="cog-rot" class="cog-game-wrap">
+        <div id="rot-lobby">
+          <div class="card"><div class="card-title" style="color:var(--amber)">🔷 Visual-Spatial — Mental Rotation</div><p style="font-size:13px;color:var(--gray-600);line-height:1.6">Look at the target shape, then tap the option that is the <strong>same shape</strong> — just rotated. 20 trials, ~2 minutes. Tests spatial reasoning used in reading court position and planning ball trajectory.</p></div>
+          <button class="btn-primary" style="background:var(--amber)" onclick="rotStart()">Start test →</button>
+          <button class="btn-primary" style="background:var(--gray-200);color:var(--gray-800);margin-top:8px" onclick="backToCogMenu()">← Back</button>
+        </div>
+        <div id="rot-game" style="display:none">
+          <div class="game-header" style="background:var(--amber)">
+            <div><div class="gh-level">MENTAL ROTATION</div><div class="digit-level-badge" id="rot-trial-lbl">Trial 1 / 20</div></div>
+            <div class="gh-timer" id="rot-timer">2:00</div>
+            <div class="gh-score-box"><div style="font-size:20px;font-weight:700;color:#fff" id="rot-correct">0</div><div style="font-size:10px;color:rgba(255,255,255,.5)">correct</div></div>
+          </div>
+          <div class="game-progress"><div class="game-progress-bar" id="rot-progress" style="width:100%;background:var(--amber)"></div></div>
+          <div class="rot-arena" id="rot-arena">
+            <div class="countdown-overlay" id="rot-countdown"><div class="countdown-num" id="rot-cd-num">3</div><div class="countdown-txt">FIND THE MATCHING SHAPE</div></div>
+            <div class="rot-target-label">Target shape</div>
+            <div class="rot-target" id="rot-target"></div>
+            <div class="rot-timer-bar"><div class="rot-timer-fill" id="rot-trial-fill" style="width:100%"></div></div>
+            <div class="rot-trial-info" id="rot-trial-info">Which option matches the target (rotated)?</div>
+            <div class="rot-options" id="rot-options"></div>
+          </div>
+        </div>
+        <div id="rot-results" style="display:none">
+          <div class="result-hero"><div class="result-score-ring" id="rot-ring"><div class="result-score-inner"><div class="result-score-num" id="rot-rnum">--</div><div class="result-score-lbl">SPATIAL SCORE</div></div></div><div class="result-interp" id="rot-rinterp">--</div><div class="result-interp-sub" id="rot-rsub">--</div></div>
+          <div class="result-stats"><div class="result-stat"><div class="rs-num" id="rot-racc">--%</div><div class="rs-lbl">ACCURACY</div></div><div class="result-stat"><div class="rs-num" id="rot-rrt">--ms</div><div class="rs-lbl">AVG RT</div></div><div class="result-stat"><div class="rs-num" id="rot-rtrials">--</div><div class="rs-lbl">TRIALS</div></div></div>
+          <div class="result-btns"><button style="background:var(--gray-100);color:var(--gray-800)" onclick="backToCogMenu()">← Menu</button><button style="background:var(--amber);color:#fff" onclick="rotStart()">Retry</button><button style="background:var(--navy);color:#fff" onclick="shareCogResult('rot')">📲 Mira</button></div>
+        </div>
+      </div>
+
+    </div><!-- end page-cog -->
+
+    <!-- ── DASHBOARD ── -->
+    <div class="page" id="page-dash">
+      <div class="dash-header-card">
+        <h3>Cognitive Readiness</h3>
+        <p>Overall brain readiness score based on today's tests</p>
+        <div class="readiness-score"><div class="readiness-num" id="dash-overall">—</div><div class="readiness-lbl">Overall Score / 100</div></div>
+      </div>
+      <div class="domain-grid" id="domain-grid"></div>
+      <div class="section-label" id="dash-flags-label" style="display:none">⚠️ Flags for Mira</div>
+      <div id="dash-flags"></div>
+      <div class="section-label">Anxiety snapshot</div>
+      <div class="card" id="dash-anxiety-card"><div class="empty" style="padding:16px"><div class="empty-icon">📊</div>No check-ins today yet.</div></div>
+      <button class="btn-primary" style="background:var(--navy);margin-top:4px" onclick="shareDashMira()">📲 Share full report with Mira</button>
+    </div>
+
+    <!-- ── REACH MIRA ── -->
+    <div class="page" id="page-sos">
+      <div class="card" style="border-color:#f5c0c0">
+        <div class="card-title" style="color:var(--red)">Need support now?</div>
+        <p style="font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:16px">Tap below to open WhatsApp and alert Mira with your current anxiety level.</p>
+        <button class="sos-btn" onclick="sendSOS()">📲 Alert Mira on WhatsApp</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Send a message</div>
+        <textarea id="sos-msg" placeholder="Tell Mira what's happening..." style="min-height:80px"></textarea>
+        <button class="btn-primary" style="background:var(--green);margin-top:10px" onclick="sendMsg()">Send via WhatsApp</button>
+      </div>
+      <div class="tip-box">
+        <h4>Box breathing — try this while you wait</h4>
+        <div class="breath-ring" id="breath-ring">Tap start</div>
+        <div class="breath-label" id="breath-label">4-count box breathing</div>
+        <button class="breath-toggle" onclick="toggleBreath()">Start</button>
+      </div>
+      <div class="tip-box" style="background:#fff9f0">
+        <h4>Grounding — 5-4-3-2-1</h4>
+        <p>5 things you <strong>see</strong> · 4 you <strong>hear</strong> · 3 you can <strong>touch</strong> · 2 you <strong>smell</strong> · 1 you <strong>taste</strong></p>
+      </div>
+    </div>
+
+  </div><!-- end .pages -->
+
+  <div class="bottom-nav">
+    <div class="nav-item active" id="nav-checkin" onclick="showPage('checkin')">
+      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>CHECK-IN
+    </div>
+    <div class="nav-item" id="nav-reflect" onclick="showPage('reflect')">
+      <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>REFLECT
+    </div>
+    <div class="nav-item" id="nav-history" onclick="showPage('history')">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>TRACK
+    </div>
+    <div class="nav-item" id="nav-cog" onclick="showPage('cog')" style="color:#7b3fe4">
+      <svg viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3a9 9 0 0 1 3.6 17.24M12 3a9 9 0 0 0-3.6 17.24M12 3v2m0 14v2"/></svg>BRAIN
+    </div>
+    <div class="nav-item" id="nav-dash" onclick="showPage('dash')" style="color:var(--teal)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>DASHBOARD
+    </div>
+    <div class="nav-item sos-nav" id="nav-sos" onclick="showPage('sos')">
+      <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.25h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.83a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>MIRA
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// ── CONFIG ──────────────────────────────────────────
+const MIRA_WHATSAPP = '601XXXXXXXXX';
+const TEAM_PIN = 'CWG2026';
+
+// ── FIREBASE ─────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyAp2QDoXOo-kmo3m82UgVDEQLWNuwrUjn4",
+  authDomain: "mindready-cwg.firebaseapp.com",
+  databaseURL: "https://mindready-cwg-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "mindready-cwg",
+  storageBucket: "mindready-cwg.firebasestorage.app",
+  messagingSenderId: "712667572058",
+  appId: "1:712667572058:web:510595459a5d621daf3563"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+let fbReady = false;
+db.ref('.info/connected').on('value', snap => { fbReady = snap.val() === true; });
+
+function athleteKey() { return athlete.toLowerCase().trim().replace(/\s+/g,'_').replace(/[.#$\[\]]/g,''); }
+
+// push one record to a list at athletes/{athlete}/{type}, keyed by Firebase push-id
+function fbPush(type, obj) {
+  if (!athlete) return;
+  db.ref('athletes/' + athleteKey() + '/data/' + type).push({
+    ...obj,
+    _ts: firebase.database.ServerValue.TIMESTAMP,
+    _name: athlete
+  }).catch(err => console.error('Firebase push failed:', err));
+}
+
+// set a single record (overwrite) at athletes/{athlete}/{type}
+function fbSet(type, obj) {
+  if (!athlete) return;
+  db.ref('athletes/' + athleteKey() + '/data/' + type).set({
+    ...obj,
+    _ts: firebase.database.ServerValue.TIMESTAMP,
+    _name: athlete
+  }).catch(err => console.error('Firebase set failed:', err));
+}
+
+// also register the athlete in a master roster so the dashboard can list everyone
+function fbRegisterAthlete() {
+  if (!athlete) return;
+  const key = athleteKey();
+  db.ref('athletes/' + key + '/name').set(athlete)
+    .catch(err => console.error('Firebase name failed:', err));
+  db.ref('athletes/' + key + '/lastActive').set(firebase.database.ServerValue.TIMESTAMP)
+    .catch(err => console.error('Firebase lastActive failed:', err));
+}
+
+// ── STATE ────────────────────────────────────────────
+let athlete='', selectedMood='', breathInterval=null, trendChart=null;
+const breathPhases=['Inhale...','Hold...','Exhale...','Hold...'];
+
+// ── STORAGE ──────────────────────────────────────────
+// localStorage stays as a fast local cache; every write also syncs to Firebase
+// so Mira gets ALL athlete data automatically, regardless of whether they hit "Share"
+function sKey(type){return 'mr_'+athlete.toLowerCase().replace(/\s+/g,'_')+'_'+type}
+function load(type){try{return JSON.parse(localStorage.getItem(sKey(type)))||[]}catch(e){return[]}}
+function store(type,arr){
+  localStorage.setItem(sKey(type),JSON.stringify(arr));
+  // sync only the newest entry to Firebase (avoid re-pushing the whole array)
+  if (arr.length) fbPush(type, arr[arr.length - 1]);
+}
+function loadOne(type){try{return JSON.parse(localStorage.getItem(sKey(type)))||null}catch(e){return null}}
+function storeOne(type,obj){
+  localStorage.setItem(sKey(type),JSON.stringify(obj));
+  fbSet(type, obj);
+}
+
+// ── LOGIN ─────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  const s=localStorage.getItem('mr_session');
+  if(s){const{name}=JSON.parse(s);document.getElementById('wb-name').textContent='👋 Hi, '+name+'!';document.getElementById('welcome-back').style.display='block';document.getElementById('wb-divider').style.display='block'}
+});
+function continueSession(){const{name}=JSON.parse(localStorage.getItem('mr_session'));launchApp(name)}
+function doLogin(){
+  const name=document.getElementById('inp-name').value.trim();
+  const pin=document.getElementById('inp-pin').value.trim();
+  const err=document.getElementById('login-error');
+  if(!name){err.textContent='Please enter your full name.';return}
+  if(pin!==TEAM_PIN){err.textContent='Incorrect PIN. Ask Mira for the team PIN.';return}
+  localStorage.setItem('mr_session',JSON.stringify({name}));
+  launchApp(name);
+}
+function launchApp(name){
+  athlete=name;
+  document.getElementById('splash').style.display='none';
+  document.getElementById('app').style.display='flex';
+  const parts=name.trim().split(' ');
+  const initials=parts.length>=2?parts[0][0].toUpperCase()+parts[parts.length-1][0].toUpperCase():name.substring(0,2).toUpperCase();
+  const cols=['#0D3B6E','#1a5294','#185FA5','#1a7a4a','#6a3e9e','#a05c00','#8b2020','#1a6b6b'];
+  let hash=0;for(let i=0;i<name.length;i++)hash=name.charCodeAt(i)+((hash<<5)-hash);
+  const av=document.getElementById('hdr-av');
+  av.textContent=initials;av.style.background=cols[Math.abs(hash)%cols.length];
+  document.getElementById('hdr-name').textContent=name;
+  fbRegisterAthlete();
+  updatePill();renderHistory();renderReflections();updateMenuScores();
+}
+function confirmSwitch(){
+  if(confirm('Switch athlete? Your data is saved.')){
+    athlete='';
+    document.getElementById('inp-name').value='';document.getElementById('inp-pin').value='';
+    document.getElementById('login-error').textContent='';
+    document.getElementById('app').style.display='none';
+    document.getElementById('splash').style.display='flex';
+    const s=localStorage.getItem('mr_session');
+    if(s){const{name}=JSON.parse(s);document.getElementById('wb-name').textContent='👋 Hi, '+name+'!';document.getElementById('welcome-back').style.display='block';document.getElementById('wb-divider').style.display='block'}
+  }
+}
+
+// ── NAV ───────────────────────────────────────────────
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  if(id==='history'){renderHistory();renderChart()}
+  if(id==='reflect')renderReflections();
+  if(id==='cog'){backToCogMenu();updateMenuScores()}
+  if(id==='dash')renderDashboard();
+}
+
+// ── SLIDERS ───────────────────────────────────────────
+function sv(id){
+  const val=document.getElementById(id).value;
+  document.getElementById(id+'-v').textContent=val;
+  if(['cog','som'].includes(id))updatePillLive();
+}
+function updatePillLive(){const avg=Math.round((+document.getElementById('cog').value+ +document.getElementById('som').value)/2);setPill(avg,'Live reading','')}
+function setPill(score,label,time){
+  const pill=document.getElementById('anxiety-pill');
+  document.getElementById('pill-score').textContent=score===null?'—':score+'/10';
+  document.getElementById('pill-label').textContent=label;
+  document.getElementById('pill-time').textContent=time;
+  pill.className='anxiety-pill '+(score===null?'anxiety-low':score<=3?'anxiety-low':score<=6?'anxiety-mod':'anxiety-high');
+}
+function updatePill(){
+  const items=load('checkins');
+  if(!items.length){setPill(null,'Anxiety level','Not checked in yet');return}
+  const l=items[items.length-1];
+  setPill(l.avg,l.avg<=3?'Low anxiety':l.avg<=6?'Moderate anxiety':'High anxiety','Last: '+l.time+', '+l.date);
+}
+function pickMood(el,mood){document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');selectedMood=mood}
+function saveCheckin(){
+  const cog=+document.getElementById('cog').value,conc=+document.getElementById('conc').value,
+    som=+document.getElementById('som').value,hr=+document.getElementById('hr').value,conf=+document.getElementById('conf').value;
+  const avg=Math.round((cog+som)/2);
+  const now=new Date();
+  const checkins=load('checkins');
+  checkins.push({cog,conc,som,hr,conf,avg,mood:selectedMood,time:now.toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit'}),date:now.toLocaleDateString('en-MY',{day:'numeric',month:'short'})});
+  store('checkins',checkins);updatePill();renderHistory();toast('Check-in saved ✓');
+}
+function setP(txt){document.getElementById('reflect-txt').value=txt+' ';document.getElementById('reflect-txt').focus()}
+function saveReflect(){
+  const txt=document.getElementById('reflect-txt').value.trim();
+  if(!txt){toast('Please write something first');return}
+  const refs=load('reflections');const now=new Date();
+  refs.push({txt,sat:+document.getElementById('sat').value,time:now.toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit'}),date:now.toLocaleDateString('en-MY',{day:'numeric',month:'short'})});
+  store('reflections',refs);document.getElementById('reflect-txt').value='';renderReflections();toast('Reflection saved ✓');
+}
+function renderHistory(){
+  const items=load('checkins'),list=document.getElementById('history-list');
+  if(!items.length){list.innerHTML='<div class="empty"><div class="empty-icon">📊</div>No check-ins yet.</div>';return}
+  list.innerHTML=items.slice().reverse().map(c=>`<div class="history-item"><div class="history-time">${c.date} · ${c.time}</div><div class="history-vals">Cognitive: ${c.cog}/10 · Somatic: ${c.som}/10 · Confidence: ${c.conf}/10 · Avg: <strong>${c.avg}/10</strong></div>${c.mood?'<div class="history-mood">Mood: '+c.mood+'</div>':''}</div>`).join('');
+}
+function renderReflections(){
+  const items=load('reflections'),list=document.getElementById('reflect-list');
+  if(!items.length){list.innerHTML='<div class="empty"><div class="empty-icon">📝</div>No reflections yet.</div>';return}
+  list.innerHTML=items.slice().reverse().map(r=>`<div class="reflect-item"><div class="reflect-text">${r.txt}</div><div class="reflect-meta">${r.date} · ${r.time} · Satisfaction: ${r.sat}/10</div></div>`).join('');
+}
+function renderChart(){
+  const items=load('checkins'),ctx=document.getElementById('trend-chart').getContext('2d');
+  if(trendChart)trendChart.destroy();
+  trendChart=new Chart(ctx,{type:'line',data:{labels:items.map(i=>i.time),datasets:[{label:'Avg anxiety',data:items.map(i=>i.avg),borderColor:'#0D3B6E',backgroundColor:'rgba(13,59,110,.08)',tension:.35,fill:true,pointRadius:5,pointBackgroundColor:'#0D3B6E'}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:1,max:10,ticks:{stepSize:2,font:{size:11}},grid:{color:'rgba(0,0,0,.06)'}},x:{ticks:{font:{size:10},maxRotation:45},grid:{display:false}}}}});
+}
+
+// ── WHATSAPP ──────────────────────────────────────────
+function waUrl(msg){return 'https://wa.me/'+MIRA_WHATSAPP+'?text='+encodeURIComponent(msg)}
+function sendSOS(){
+  const checkins=load('checkins');let extra='';
+  if(checkins.length){const l=checkins[checkins.length-1];extra='\n\n📊 Latest check-in ('+l.time+', '+l.date+'):\nCognitive: '+l.cog+'/10 · Somatic: '+l.som+'/10 · Confidence: '+l.conf+'/10\nAvg anxiety: '+l.avg+'/10'+(l.mood?'\nMood: '+l.mood:'')}
+  window.open(waUrl('🚨 *SUPPORT NEEDED — MindReady*\n\nHi Mira, this is *'+athlete+'*.\n\nI need your support right now.'+extra+'\n\nPlease reach out when you can 🙏'),'_blank');
+}
+function sendMsg(){
+  const txt=document.getElementById('sos-msg').value.trim();
+  if(!txt){toast('Please type a message first');return}
+  window.open(waUrl('📩 *Message via MindReady*\n\nHi Mira, this is *'+athlete+'*.\n\n'+txt),'_blank');
+  document.getElementById('sos-msg').value='';toast('Opening WhatsApp...');
+}
+
+// ── BREATHING ─────────────────────────────────────────
+function toggleBreath(){
+  const ring=document.getElementById('breath-ring'),lbl=document.getElementById('breath-label'),btn=event.target;
+  if(breathInterval){clearInterval(breathInterval);breathInterval=null;ring.classList.remove('breathing');ring.textContent='Tap start';lbl.textContent='4-count box breathing';btn.textContent='Start'}
+  else{btn.textContent='Stop';ring.classList.add('breathing');let phase=0;const step=()=>{lbl.textContent=breathPhases[phase%4]+' 1, 2, 3, 4';ring.textContent=breathPhases[phase%4];phase++};step();breathInterval=setInterval(step,4000)}
+}
+
+// ── TOAST ─────────────────────────────────────────────
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+
+// ══════════════════════════════════════════════════════
+// ── COGNITIVE TESTS ───────────────────────────────────
+// ══════════════════════════════════════════════════════
+
+function launchCogTest(id){
+  document.getElementById('cog-menu').style.display='none';
+  document.querySelectorAll('.cog-game-wrap').forEach(w=>w.classList.remove('active'));
+  document.getElementById('cog-'+id).classList.add('active');
+}
+function backToCogMenu(){
+  // stop any running game timers
+  clearAllGameTimers();
+  document.querySelectorAll('.cog-game-wrap').forEach(w=>w.classList.remove('active'));
+  document.getElementById('cog-menu').style.display='block';
+  updateMenuScores();
+}
+function clearAllGameTimers(){
+  clearInterval(stroopGameTimer);clearTimeout(stroopTrialTimer);
+  clearInterval(dsShowTimer);clearTimeout(dsInputTimer);
+  clearInterval(psGameTimer);clearTimeout(psTargetTimer);
+  clearInterval(gngGameTimer);clearTimeout(gngTrialTimer);
+  clearInterval(rotGameTimer);clearTimeout(rotTrialTimer);
+}
+
+function updateMenuScores(){
+  const tests={stroop:{key:'cog_stroop',lbl:'FOCUS'},digit:{key:'cog_digit',lbl:'MEMORY'},ps:{key:'cog_ps',lbl:'SPEED'},gng:{key:'cog_gng',lbl:'CONTROL'},rot:{key:'cog_rot',lbl:'SPATIAL'}};
+  Object.entries(tests).forEach(([id,{key,lbl}])=>{
+    const h=load(key);const el=document.getElementById('menu-score-'+id);
+    if(h.length){const last=h[h.length-1];const col=scoreColour(last.score);el.querySelector('.cts').textContent=last.score;el.querySelector('.cts').style.color=col}
+    else{el.querySelector('.cts').textContent='—';el.querySelector('.cts').style.color='var(--gray-400)'}
+  });
+}
+
+function scoreColour(s){return s>=70?'var(--green)':s>=50?'var(--amber)':'var(--red)'}
+
+function genericInterpret(score,domain){
+  const map={
+    focus:[
+      [85,'🔥 Attention locked in','Exceptional focus. Filtering distractions very well — great sign before competition.'],
+      [70,'✅ Focus is solid','Good attentional control with minor lapses. Stay composed and trust your process.'],
+      [55,'⚡ Focus is moderate','Some distraction getting through. Try a grounding exercise before competing.'],
+      [40,'⚠️ Focus is scattered','Attention is fragmented. Consider a short reset routine before your event.'],
+      [0,'🆘 Focus very low','Significant attention difficulty. Please check in with Mira before competing.']
+    ],
+    memory:[
+      [85,'🧠 Memory is sharp','Excellent working memory. Holding game plans and adapting tactics will feel effortless.'],
+      [70,'✅ Memory is good','Good mental workspace. You can hold and process information well under pressure.'],
+      [55,'⚡ Memory is moderate','Some capacity reduction. Keep game plans simple; rely on routines today.'],
+      [40,'⚠️ Memory is limited','Noticeable working memory dip. Avoid complex tactical changes — keep it simple.'],
+      [0,'🆘 Memory very low','Significant reduction. Talk to Mira — fatigue or stress may be impacting you.']
+    ],
+    speed:[
+      [85,'⚡ Processing speed is high','Reaction time is excellent. Your brain is firing fast and ready today.'],
+      [70,'✅ Speed is good','Solid processing speed. You should be reactive and sharp in competition.'],
+      [55,'⚡ Speed is moderate','Slightly slower than optimal. Warm up thoroughly before competing.'],
+      [40,'⚠️ Speed is sluggish','Reaction time is reduced — possible sign of fatigue. Tell Mira.'],
+      [0,'🆘 Speed very low','Very slow reactions detected. Please rest and speak to Mira before competing.']
+    ],
+    control:[
+      [85,'🎯 Impulse control is excellent','You are holding and releasing decisions well — critical for precision sport.'],
+      [70,'✅ Control is good','Good inhibitory control. You can manage impulsive responses well today.'],
+      [55,'⚡ Control is moderate','Some impulse errors. Take a breath before key moments in competition.'],
+      [40,'⚠️ Control is reduced','Noticeable difficulty holding impulses. Box breathing may help before competing.'],
+      [0,'🆘 Control very low','Significant impulsivity. Speak to Mira — anxiety or fatigue is likely contributing.']
+    ],
+    spatial:[
+      [85,'🔷 Spatial reasoning is sharp','Excellent visual-spatial ability. Reading court positions will feel intuitive.'],
+      [70,'✅ Spatial is good','Good spatial reasoning. Tactical planning and trajectory reading should be reliable.'],
+      [55,'⚡ Spatial is moderate','Slightly reduced spatial processing. Trust your pre-trained patterns today.'],
+      [40,'⚠️ Spatial is reduced','Visual-spatial ability dipping. Complex spatial decisions may feel harder.'],
+      [0,'🆘 Spatial very low','Significant spatial difficulty. Speak to Mira before competition.']
+    ]
+  };
+  const tiers=map[domain]||map.focus;
+  for(const[thresh,title,sub]of tiers){if(score>=thresh)return{title,sub}}
+  return{title:'—',sub:'—'}
+}
+
+function saveGameResult(key,payload){
+  const h=load(key);
+  const now=new Date();
+  h.push({...payload,time:now.toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit'}),date:now.toLocaleDateString('en-MY',{day:'numeric',month:'short'})});
+  store(key,h);
+}
+
+function setResultRing(ringId,numId,score,colour){
+  const pct=score/100;
+  document.getElementById(ringId).style.background=`conic-gradient(${colour} ${pct*360}deg,#e8eaed ${pct*360}deg)`;
+  document.getElementById(numId).textContent=score;
+  document.getElementById(numId).style.color=colour;
+}
+
+function showGameSection(prefix,section){
+  ['lobby','game','results'].forEach(s=>{
+    const el=document.getElementById(prefix+'-'+s);
+    if(el)el.style.display=s===section?'block':'none';
+  });
+}
+
+function genericCountdown(overlayId,numId,cb){
+  let cd=3;
+  document.getElementById(overlayId).style.display='flex';
+  document.getElementById(numId).textContent=cd;
+  const t=setInterval(()=>{
+    cd--;
+    if(cd<=0){clearInterval(t);document.getElementById(overlayId).style.display='none';cb()}
+    else{document.getElementById(numId).textContent=cd;const el=document.getElementById(numId);el.style.animation='none';el.offsetHeight;el.style.animation='popIn .4s ease'}
+  },900);
+}
+
+function shareCogResult(type){
+  const map={stroop:{key:'cog_stroop',name:'Stroop (Focus)',domain:'focus'},digit:{key:'cog_digit',name:'Digit Span (Memory)',domain:'memory'},ps:{key:'cog_ps',name:'Tap the Target (Speed)',domain:'speed'},gng:{key:'cog_gng',name:'Go/No-Go (Control)',domain:'control'},rot:{key:'cog_rot',name:'Mental Rotation (Spatial)',domain:'spatial'}};
+  const{key,name,domain}=map[type];const h=load(key);if(!h.length)return;
+  const r=h[h.length-1];const i=genericInterpret(r.score,domain);
+  const msg=`🧠 *Cognitive Test Result — MindReady*\n\nAthlete: *${athlete}*\nTest: ${name}\n\nScore: *${r.score}/100*\nDate: ${r.date} · ${r.time}\n\n${i.title}\n"${i.sub}"`;
+  window.open(waUrl(msg),'_blank');
+}
+
+// ══ STROOP ════════════════════════════════════════════
+const ST_COLOURS=[{name:'RED',hex:'#e74c3c'},{name:'BLUE',hex:'#2980b9'},{name:'GREEN',hex:'#27ae60'},{name:'YELLOW',hex:'#f1c40f'},{name:'PURPLE',hex:'#8e44ad'},{name:'ORANGE',hex:'#e67e22'}];
+const ST_CFG={1:{trials:30,totalSec:180,trialMs:4000,dist:0},2:{trials:40,totalSec:180,trialMs:2800,dist:0},3:{trials:40,totalSec:180,trialMs:2800,dist:6}};
+let stroopLevel=1,stroopTrials=[],stroopIdx=0,stroopCorrect=0,stroopWrong=0,stroopRTs=[],stroopTrialStart=0,stroopGameTimer=null,stroopTrialTimer=null,stroopSecondsLeft=180,stroopRunning=false;
+
+function selectStroopLevel(lvl,el){stroopLevel=lvl;document.querySelectorAll('#st-lobby .level-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected')}
+
+function stroopBuildTrials(lvl){
+  const arr=[];const cfg=ST_CFG[lvl];
+  for(let i=0;i<cfg.trials;i++){
+    const ink=Math.floor(Math.random()*ST_COLOURS.length);let word=Math.floor(Math.random()*ST_COLOURS.length);
+    if(Math.random()<.8)while(word===ink)word=Math.floor(Math.random()*ST_COLOURS.length);
+    arr.push({ink:ST_COLOURS[ink],word:ST_COLOURS[word]});
+  }
+  return arr;
+}
+function stroopBuildBtns(inkColour){
+  const opts=[inkColour];const pool=ST_COLOURS.filter(c=>c.name!==inkColour.name);
+  while(opts.length<4){const p=pool.splice(Math.floor(Math.random()*pool.length),1)[0];opts.push(p)}
+  opts.sort(()=>Math.random()-.5);
+  const c=document.getElementById('st-btns');c.innerHTML='';
+  opts.forEach(col=>{const b=document.createElement('button');b.className='answer-btn';b.textContent=col.name;b.style.background=col.hex;b.onclick=()=>stroopAnswer(col.name===inkColour.name);c.appendChild(b)});
+}
+function stroopStart(){
+  if(!stroopLevel){toast('Select a level first');return}
+  const cfg=ST_CFG[stroopLevel];
+  stroopTrials=stroopBuildTrials(stroopLevel);stroopIdx=0;stroopCorrect=0;stroopWrong=0;stroopRTs=[];stroopSecondsLeft=cfg.totalSec;stroopRunning=true;
+  showGameSection('st','game');
+  genericCountdown('st-countdown','st-cd-num',()=>{stroopLaunchTrial();stroopStartClock()});
+}
+function stroopRetry(){stroopStart()}
+function stroopStartClock(){
+  clearInterval(stroopGameTimer);
+  stroopGameTimer=setInterval(()=>{
+    stroopSecondsLeft--;
+    const m=Math.floor(stroopSecondsLeft/60),s=stroopSecondsLeft%60;
+    document.getElementById('st-timer').textContent=m+':'+(s<10?'0':'')+s;
+    document.getElementById('st-progress').style.width=(stroopSecondsLeft/ST_CFG[stroopLevel].totalSec*100)+'%';
+    if(stroopSecondsLeft<=0)stroopEnd();
+  },1000);
+}
+function stroopLaunchTrial(){
+  if(!stroopRunning)return;
+  if(stroopIdx>=stroopTrials.length){stroopEnd();return}
+  clearTimeout(stroopTrialTimer);
+  const trial=stroopTrials[stroopIdx],cfg=ST_CFG[stroopLevel];
+  const w=document.getElementById('st-word');w.textContent=trial.word.name;w.style.color=trial.ink.hex;w.className='stroop-word';
+  document.getElementById('st-trial-lbl').textContent='Trial '+(stroopIdx+1)+' / '+cfg.trials;
+  document.getElementById('st-level-lbl').textContent='LEVEL '+stroopLevel;
+  // distractors
+  document.querySelectorAll('#st-arena .distractor').forEach(d=>d.remove());
+  if(cfg.dist){for(let i=0;i<cfg.dist;i++){const d=document.createElement('div');d.className='distractor';d.textContent=ST_COLOURS[Math.floor(Math.random()*ST_COLOURS.length)].name;d.style.color=ST_COLOURS[Math.floor(Math.random()*ST_COLOURS.length)].hex;d.style.left=(5+Math.random()*80)+'%';d.style.top=(10+Math.random()*70)+'%';d.style.animationDuration=(3+Math.random()*4)+'s';d.style.animationDelay=(-Math.random()*4)+'s';document.getElementById('st-arena').appendChild(d)}}
+  // feedback fill
+  const fill=document.getElementById('st-fill');fill.style.transition='none';fill.style.width='100%';fill.style.background='var(--purple)';
+  setTimeout(()=>{fill.style.transition='width '+cfg.trialMs+'ms linear';fill.style.width='0%'},30);
+  stroopBuildBtns(trial.ink);stroopTrialStart=Date.now();
+  stroopTrialTimer=setTimeout(()=>{stroopWrong++;stroopNextTrial()},cfg.trialMs);
+}
+function stroopAnswer(correct){
+  if(!stroopRunning)return;clearTimeout(stroopTrialTimer);
+  stroopRTs.push(Date.now()-stroopTrialStart);
+  const w=document.getElementById('st-word');
+  if(correct){stroopCorrect++;w.classList.add('flash-right')}else{stroopWrong++;w.classList.add('flash-wrong')}
+  document.getElementById('st-correct').textContent=stroopCorrect;
+  setTimeout(stroopNextTrial,220);
+}
+function stroopNextTrial(){stroopIdx++;if(stroopIdx>=stroopTrials.length)stroopEnd();else stroopLaunchTrial()}
+function stroopEnd(){
+  stroopRunning=false;clearInterval(stroopGameTimer);clearTimeout(stroopTrialTimer);
+  document.querySelectorAll('#st-arena .distractor').forEach(d=>d.remove());
+  const total=stroopCorrect+stroopWrong,acc=total>0?Math.round(stroopCorrect/total*100):0;
+  const avgRT=stroopRTs.length?Math.round(stroopRTs.reduce((a,b)=>a+b,0)/stroopRTs.length):0;
+  const cfg=ST_CFG[stroopLevel];
+  const rtBonus=avgRT>0?Math.max(0,Math.round((cfg.trialMs-avgRT)/cfg.trialMs*25)):0;
+  const score=Math.min(100,Math.round(acc*.70+rtBonus+(stroopLevel-1)*5));
+  saveGameResult('cog_stroop',{score,acc,avgRT,level:stroopLevel,correct:stroopCorrect,total});
+  const col=scoreColour(score);const i=genericInterpret(score,'focus');
+  setResultRing('st-ring','st-rnum',score,col);
+  document.getElementById('st-rinterp').textContent=i.title;document.getElementById('st-rsub').textContent=i.sub;
+  document.getElementById('st-racc').textContent=acc+'%';document.getElementById('st-rrt').textContent=avgRT+'ms';document.getElementById('st-rlvl').textContent='L'+stroopLevel;
+  showGameSection('st','results');
+}
+
+// ══ DIGIT SPAN ════════════════════════════════════════
+let dsSequence=[],dsUserInput=[],dsSpan=3,dsRound=0,dsTotalCorrect=0,dsTotalTrials=0,dsMaxSpan=0,dsShowTimer=null,dsInputTimer=null,dsPhase='watch';
+
+function dsStart(){
+  dsSpan=3;dsRound=0;dsTotalCorrect=0;dsTotalTrials=0;dsMaxSpan=0;dsSequence=[];dsUserInput=[];
+  showGameSection('ds','game');
+  dsShowTimer=null;dsInputTimer=null;
+  setTimeout(()=>dsNewRound(),400);
+}
+function dsNewRound(){
+  dsRound++;dsSequence=[];dsUserInput=[];
+  for(let i=0;i<dsSpan;i++)dsSequence.push(Math.floor(Math.random()*10));
+  document.getElementById('ds-level-lbl').textContent='SEQUENCE '+dsRound;
+  document.getElementById('ds-span-lbl').textContent=dsSpan+' digits';
+  document.getElementById('ds-streak').textContent=dsTotalCorrect;
+  document.getElementById('ds-phase').textContent='Watch...';
+  document.getElementById('ds-pad').style.display='none';
+  document.getElementById('ds-input-row').style.display='none';
+  document.getElementById('ds-digit').style.display='none';
+  document.getElementById('ds-prompt').textContent='Remember the sequence...';
+  document.getElementById('ds-prompt').style.display='block';
+  let idx=0;
+  const showNext=()=>{
+    if(idx>=dsSequence.length){dsPhase='input';dsPromptInput();return}
+    document.getElementById('ds-prompt').style.display='none';
+    document.getElementById('ds-digit').textContent=dsSequence[idx];
+    document.getElementById('ds-digit').style.display='block';
+    document.getElementById('ds-digit').style.animation='none';document.getElementById('ds-digit').offsetHeight;document.getElementById('ds-digit').style.animation='popIn .3s ease';
+    idx++;dsShowTimer=setTimeout(()=>{document.getElementById('ds-digit').style.display='none';dsShowTimer=setTimeout(showNext,350)},800);
+  };
+  setTimeout(showNext,700);
+}
+function dsPromptInput(){
+  document.getElementById('ds-phase').textContent='Recall!';
+  document.getElementById('ds-prompt').textContent='Type the digits in order:';
+  document.getElementById('ds-prompt').style.display='block';
+  document.getElementById('ds-input-row').style.display='flex';
+  document.getElementById('ds-input-row').innerHTML='';
+  document.getElementById('ds-pad').style.display='grid';
+  dsUserInput=[];
+}
+function dsPad(n){
+  if(dsUserInput.length>=dsSequence.length)return;
+  dsUserInput.push(n);
+  const row=document.getElementById('ds-input-row');
+  const chip=document.createElement('div');chip.className='digit-answer-chip';chip.textContent=n;row.appendChild(chip);
+}
+function dsDel(){
+  if(!dsUserInput.length)return;
+  dsUserInput.pop();
+  const row=document.getElementById('ds-input-row');
+  if(row.lastChild)row.removeChild(row.lastChild);
+}
+function dsSubmit(){
+  if(dsUserInput.length<dsSequence.length){toast('Enter all '+dsSequence.length+' digits');return}
+  dsTotalTrials++;
+  const correct=dsSequence.every((d,i)=>d===dsUserInput[i]);
+  if(correct){dsTotalCorrect++;dsMaxSpan=Math.max(dsMaxSpan,dsSpan);dsSpan=Math.min(dsSpan+1,12);toast('✓ Correct!')}
+  else{dsSpan=Math.max(3,dsSpan-1);toast('✗ '+dsSequence.join(' '))}
+  // end after 10 trials or 3 consecutive wrong
+  if(dsTotalTrials>=10){setTimeout(dsEnd,600)}else{setTimeout(dsNewRound,800)}
+}
+function dsEnd(){
+  const score=Math.min(100,Math.round(((dsMaxSpan-3)/9)*60+((dsTotalCorrect/Math.max(dsTotalTrials,1))*40)));
+  const acc=Math.round(dsTotalCorrect/Math.max(dsTotalTrials,1)*100);
+  saveGameResult('cog_digit',{score,acc,maxSpan:dsMaxSpan,trials:dsTotalTrials,correct:dsTotalCorrect});
+  const col=scoreColour(score);const i=genericInterpret(score,'memory');
+  setResultRing('ds-ring','ds-rnum',score,col);
+  document.getElementById('ds-rinterp').textContent=i.title;document.getElementById('ds-rsub').textContent=i.sub;
+  document.getElementById('ds-rspan').textContent=dsMaxSpan;document.getElementById('ds-racc').textContent=acc+'%';document.getElementById('ds-rtrials').textContent=dsTotalTrials;
+  showGameSection('ds','results');
+}
+
+// ══ PROCESSING SPEED ══════════════════════════════════
+const PS_TOTAL=90;
+let psHits=0,psMisses=0,psRTs=[],psStart_=0,psTargetVisible=false,psGameTimer=null,psTargetTimer=null,psSec=PS_TOTAL,psRunning=false;
+
+function psStart(){
+  psHits=0;psMisses=0;psRTs=[];psTargetVisible=false;psSec=PS_TOTAL;psRunning=false;
+  showGameSection('ps','game');
+  document.getElementById('ps-target').style.display='none';
+  document.getElementById('ps-tap-hint').style.display='block';
+  document.getElementById('ps-instruction').textContent='Tap the circle when it appears!';
+  document.getElementById('ps-countdown').style.display='flex';
+  document.getElementById('ps-cd-num').textContent=3;
+  genericCountdown('ps-countdown','ps-cd-num',()=>{psRunning=true;psTick();psScheduleTarget()});
+}
+function psTick(){
+  clearInterval(psGameTimer);
+  psGameTimer=setInterval(()=>{
+    psSec--;
+    const m=Math.floor(psSec/60),s=psSec%60;
+    document.getElementById('ps-timer').textContent=m+':'+(s<10?'0':'')+s;
+    document.getElementById('ps-progress').style.width=(psSec/PS_TOTAL*100)+'%';
+    if(psSec<=0)psEnd();
+  },1000);
+}
+function psScheduleTarget(){
+  if(!psRunning)return;
+  const delay=800+Math.random()*1800;
+  psTargetTimer=setTimeout(()=>{
+    if(!psRunning)return;
+    // hide hint
+    document.getElementById('ps-tap-hint').style.display='none';
+    // place target
+    const arena=document.getElementById('ps-arena');
+    const aw=arena.offsetWidth-100,ah=arena.offsetHeight-100;
+    const x=20+Math.random()*Math.max(aw-40,10),y=20+Math.random()*Math.max(ah-40,10);
+    const t=document.getElementById('ps-target');
+    const colours=['#e74c3c','#2980b9','#27ae60','#f1c40f','#8e44ad','#e67e22'];
+    t.style.left=x+'px';t.style.top=y+'px';t.style.background=colours[Math.floor(Math.random()*colours.length)];
+    t.style.display='flex';t.style.width='72px';t.style.height='72px';
+    psTargetVisible=true;psStart_=Date.now();
+    // auto-miss after 1.5s
+    psTargetTimer=setTimeout(()=>{
+      if(psTargetVisible){psMisses++;psTargetVisible=false;document.getElementById('ps-target').style.display='none';document.getElementById('ps-misses').textContent=psMisses;psScheduleTarget()}
+    },1500);
+  },delay);
+}
+function psTapArena(e){
+  if(!psRunning||!psTargetVisible)return;
+  const t=document.getElementById('ps-target');
+  const rect=t.getBoundingClientRect();
+  // check if tap is on target
+  const tx=e.clientX,ty=e.clientY;
+  if(tx>=rect.left&&tx<=rect.right&&ty>=rect.top&&ty<=rect.bottom){
+    const rt=Date.now()-psStart_;psRTs.push(rt);psHits++;psTargetVisible=false;
+    t.style.display='none';clearTimeout(psTargetTimer);
+    document.getElementById('ps-hits').textContent=psHits;
+    document.getElementById('ps-hits-lbl').textContent=psHits+' hits';
+    const avgRT=Math.round(psRTs.reduce((a,b)=>a+b,0)/psRTs.length);
+    const bestRT=Math.min(...psRTs);
+    document.getElementById('ps-avg-rt').textContent=avgRT;
+    document.getElementById('ps-best-rt').textContent=bestRT;
+    psScheduleTarget();
+  }
+}
+function psEnd(){
+  psRunning=false;clearInterval(psGameTimer);clearTimeout(psTargetTimer);
+  document.getElementById('ps-target').style.display='none';
+  const avgRT=psRTs.length?Math.round(psRTs.reduce((a,b)=>a+b,0)/psRTs.length):999;
+  const bestRT=psRTs.length?Math.min(...psRTs):999;
+  // score: lower RT = higher score; 200ms = 100, 800ms = 0
+  const rtScore=psRTs.length?Math.max(0,Math.min(100,Math.round((800-avgRT)/6))):0;
+  const hitScore=Math.min(100,Math.round(psHits/25*40));
+  const score=Math.min(100,Math.round(rtScore*.7+hitScore*.3));
+  saveGameResult('cog_ps',{score,avgRT,bestRT,hits:psHits,misses:psMisses});
+  const col=scoreColour(score);const i=genericInterpret(score,'speed');
+  setResultRing('ps-ring','ps-rnum',score,col);
+  document.getElementById('ps-rinterp').textContent=i.title;document.getElementById('ps-rsub').textContent=i.sub;
+  document.getElementById('ps-ravg').textContent=avgRT+'ms';document.getElementById('ps-rbest').textContent=bestRT+'ms';document.getElementById('ps-rhits').textContent=psHits;
+  showGameSection('ps','results');
+}
+
+// ══ GO / NO-GO ════════════════════════════════════════
+const GNG_TRIALS=40,GNG_TOTAL=120;
+let gngTrialIdx=0,gngGoCorrect=0,gngNoGoCorrect=0,gngErrors=0,gngRTs=[],gngTrialStart=0,gngIsGo=false,gngWaiting=false,gngGameTimer=null,gngTrialTimer=null,gngSec=GNG_TOTAL,gngRunning=false;
+
+function gngStart(){
+  gngTrialIdx=0;gngGoCorrect=0;gngNoGoCorrect=0;gngErrors=0;gngRTs=[];gngSec=GNG_TOTAL;gngRunning=false;gngWaiting=false;
+  showGameSection('gng','game');
+  document.getElementById('gng-circle').style.background='var(--gray-200)';
+  document.getElementById('gng-circle').textContent='?';
+  genericCountdown('gng-countdown','gng-cd-num',()=>{gngRunning=true;gngTick();gngNextTrial()});
+}
+function gngTick(){
+  clearInterval(gngGameTimer);
+  gngGameTimer=setInterval(()=>{
+    gngSec--;
+    const m=Math.floor(gngSec/60),s=gngSec%60;
+    document.getElementById('gng-timer').textContent=m+':'+(s<10?'0':'')+s;
+    document.getElementById('gng-progress').style.width=(gngSec/GNG_TOTAL*100)+'%';
+    if(gngSec<=0)gngEnd();
+  },1000);
+}
+function gngNextTrial(){
+  if(!gngRunning)return;
+  if(gngTrialIdx>=GNG_TRIALS){gngEnd();return}
+  clearTimeout(gngTrialTimer);gngWaiting=false;
+  const circle=document.getElementById('gng-circle');
+  circle.style.background='var(--gray-200)';circle.textContent='';
+  circle.style.animation='none';
+  // 70% go, 30% no-go
+  gngIsGo=Math.random()<0.7;
+  gngTrialIdx++;
+  document.getElementById('gng-trial-lbl').textContent='Trial '+gngTrialIdx+' / '+GNG_TRIALS;
+  const delay=500+Math.random()*800;
+  gngTrialTimer=setTimeout(()=>{
+    if(!gngRunning)return;
+    gngWaiting=true;gngTrialStart=Date.now();
+    circle.style.background=gngIsGo?'var(--green)':'var(--red)';
+    circle.textContent=gngIsGo?'TAP':'HOLD';
+    document.getElementById('gng-hint').textContent=gngIsGo?'Tap now!':'Hold — don\'t tap!';
+    // auto-result if no-go and no tap after 1s, or go and no tap after 1.2s (miss)
+    gngTrialTimer=setTimeout(()=>{
+      if(!gngWaiting)return;
+      if(gngIsGo){gngErrors++;document.getElementById('gng-errors').textContent=gngErrors}
+      else{gngNoGoCorrect++;document.getElementById('gng-nogo-correct').textContent=gngNoGoCorrect}
+      gngWaiting=false;circle.style.background='var(--gray-200)';circle.textContent='';
+      document.getElementById('gng-score-disp').textContent=gngGoCorrect+gngNoGoCorrect;
+      setTimeout(gngNextTrial,400);
+    },gngIsGo?1200:900);
+  },delay);
+}
+function gngTap(){
+  if(!gngRunning||!gngWaiting)return;
+  clearTimeout(gngTrialTimer);gngWaiting=false;
+  const rt=Date.now()-gngTrialStart;
+  const circle=document.getElementById('gng-circle');
+  if(gngIsGo){gngGoCorrect++;gngRTs.push(rt);circle.classList.add('gng-flash-correct');document.getElementById('gng-go-correct').textContent=gngGoCorrect}
+  else{gngErrors++;circle.classList.add('gng-flash-wrong');document.getElementById('gng-errors').textContent=gngErrors}
+  document.getElementById('gng-score-disp').textContent=gngGoCorrect+gngNoGoCorrect;
+  setTimeout(()=>{circle.classList.remove('gng-flash-correct','gng-flash-wrong');circle.style.background='var(--gray-200)';circle.textContent='';setTimeout(gngNextTrial,300)},350);
+}
+function gngEnd(){
+  gngRunning=false;clearInterval(gngGameTimer);clearTimeout(gngTrialTimer);
+  const total=gngGoCorrect+gngNoGoCorrect+gngErrors;
+  const acc=total>0?Math.round((gngGoCorrect+gngNoGoCorrect)/total*100):0;
+  const avgRT=gngRTs.length?Math.round(gngRTs.reduce((a,b)=>a+b,0)/gngRTs.length):999;
+  const errRate=total>0?gngErrors/total:1;
+  const score=Math.min(100,Math.round(acc*.75+(1-errRate)*25));
+  saveGameResult('cog_gng',{score,acc,avgRT,errors:gngErrors,goCorrect:gngGoCorrect,noGoCorrect:gngNoGoCorrect,total});
+  const col=scoreColour(score);const i=genericInterpret(score,'control');
+  setResultRing('gng-ring','gng-rnum',score,col);
+  document.getElementById('gng-rinterp').textContent=i.title;document.getElementById('gng-rsub').textContent=i.sub;
+  document.getElementById('gng-racc').textContent=acc+'%';document.getElementById('gng-rerr').textContent=gngErrors;document.getElementById('gng-rrt').textContent=avgRT+'ms';
+  showGameSection('gng','results');
+}
+
+// ══ MENTAL ROTATION ═══════════════════════════════════
+const ROT_SHAPES=[
+  [[1,0,1],[1,1,0],[0,0,0]],[[1,1,0],[0,1,0],[0,1,1]],[[0,1,0],[1,1,1],[0,1,0]],
+  [[1,1,1],[1,0,0],[1,0,0]],[[1,0,0],[1,1,1],[0,0,1]],[[0,1,1],[1,1,0],[0,0,0]],
+  [[1,1,0],[0,1,1],[0,1,0]],[[1,0,1],[1,1,1],[0,0,0]]
+];
+const ROT_TOTAL=20,ROT_SEC=120,ROT_TRIAL_MS=6000;
+let rotIdx=0,rotCorrect_=0,rotWrong_=0,rotRTs_=[],rotTrialStart_=0,rotGameTimer=null,rotTrialTimer=null,rotSec=ROT_SEC,rotRunning=false,rotAnswered=false;
+
+function rotateMatrix(m,times){
+  let r=m;for(let t=0;t<times;t++){const n=r[0].length,rows=r.length;const nr=[];for(let i=0;i<n;i++){nr.push([]);for(let j=rows-1;j>=0;j--)nr[i].push(r[j][i])}r=nr}return r
+}
+function drawShape(matrix,size,colour){
+  const cell=size/matrix[0].length;const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('width',size);svg.setAttribute('height',size);svg.style.display='block';
+  matrix.forEach((row,ri)=>row.forEach((v,ci)=>{if(v){const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');rect.setAttribute('x',ci*cell+1);rect.setAttribute('y',ri*cell+1);rect.setAttribute('width',cell-2);rect.setAttribute('height',cell-2);rect.setAttribute('rx',3);rect.setAttribute('fill',colour);svg.appendChild(rect)}}));
+  return svg;
+}
+function rotStart(){
+  rotIdx=0;rotCorrect_=0;rotWrong_=0;rotRTs_=[];rotSec=ROT_SEC;rotRunning=false;
+  showGameSection('rot','game');
+  genericCountdown('rot-countdown','rot-cd-num',()=>{rotRunning=true;rotTick();rotNextTrial()});
+}
+function rotTick(){
+  clearInterval(rotGameTimer);
+  rotGameTimer=setInterval(()=>{
+    rotSec--;
+    const m=Math.floor(rotSec/60),s=rotSec%60;
+    document.getElementById('rot-timer').textContent=m+':'+(s<10?'0':'')+s;
+    document.getElementById('rot-progress').style.width=(rotSec/ROT_SEC*100)+'%';
+    if(rotSec<=0)rotEnd();
+  },1000);
+}
+function rotNextTrial(){
+  if(!rotRunning)return;
+  if(rotIdx>=ROT_TOTAL){rotEnd();return}
+  clearTimeout(rotTrialTimer);rotAnswered=false;
+  const baseShape=ROT_SHAPES[Math.floor(Math.random()*ROT_SHAPES.length)];
+  const baseRot=Math.floor(Math.random()*4);
+  const targetMatrix=rotateMatrix(baseShape,baseRot);
+  // answer: one of 4, one is correct (different rotation of same), others are different shapes
+  const correctRot=(baseRot+1+Math.floor(Math.random()*3))%4;
+  const correctMatrix=rotateMatrix(baseShape,correctRot);
+  const options=[{matrix:correctMatrix,correct:true}];
+  const pool=ROT_SHAPES.filter(s=>s!==baseShape);
+  while(options.length<4){
+    const s=pool.splice(Math.floor(Math.random()*pool.length),1)[0];
+    options.push({matrix:rotateMatrix(s,Math.floor(Math.random()*4)),correct:false});
+  }
+  options.sort(()=>Math.random()-.5);
+  rotIdx++;document.getElementById('rot-trial-lbl').textContent='Trial '+rotIdx+' / '+ROT_TOTAL;
+  // target
+  const tgt=document.getElementById('rot-target');tgt.innerHTML='';tgt.appendChild(drawShape(targetMatrix,90,'#0D3B6E'));
+  // options
+  const optDiv=document.getElementById('rot-options');optDiv.innerHTML='';
+  options.forEach((opt,i)=>{
+    const div=document.createElement('div');div.className='rot-option';
+    div.appendChild(drawShape(opt.matrix,72,opt.correct?'#0D3B6E':'#5f6368'));
+    div.onclick=()=>{if(rotAnswered)return;rotAnswered=true;rotAnswer(opt.correct,div,options,optDiv)};
+    optDiv.appendChild(div);
+  });
+  // timer fill
+  const fill=document.getElementById('rot-trial-fill');fill.style.transition='none';fill.style.width='100%';
+  setTimeout(()=>{fill.style.transition='width '+ROT_TRIAL_MS+'ms linear';fill.style.width='0%'},30);
+  rotTrialStart_=Date.now();
+  rotTrialTimer=setTimeout(()=>{if(!rotAnswered){rotAnswered=true;rotWrong_++;setTimeout(rotNextTrial,500)}},ROT_TRIAL_MS);
+}
+function rotAnswer(correct,el,options,optDiv){
+  clearTimeout(rotTrialTimer);
+  const rt=Date.now()-rotTrialStart_;rotRTs_.push(rt);
+  if(correct){rotCorrect_++;el.classList.add('selected-correct')}
+  else{rotWrong_++;el.classList.add('selected-wrong');// show correct
+    Array.from(optDiv.children).forEach((c,i)=>{if(options[i].correct)c.classList.add('selected-correct')})}
+  document.getElementById('rot-correct').textContent=rotCorrect_;
+  setTimeout(rotNextTrial,700);
+}
+function rotEnd(){
+  rotRunning=false;clearInterval(rotGameTimer);clearTimeout(rotTrialTimer);
+  const total=rotCorrect_+rotWrong_,acc=total>0?Math.round(rotCorrect_/total*100):0;
+  const avgRT=rotRTs_.length?Math.round(rotRTs_.reduce((a,b)=>a+b,0)/rotRTs_.length):0;
+  const score=Math.min(100,Math.round(acc*.75+Math.max(0,Math.round((ROT_TRIAL_MS-avgRT)/ROT_TRIAL_MS*25))));
+  saveGameResult('cog_rot',{score,acc,avgRT,correct:rotCorrect_,total});
+  const col=scoreColour(score);const i=genericInterpret(score,'spatial');
+  setResultRing('rot-ring','rot-rnum',score,col);
+  document.getElementById('rot-rinterp').textContent=i.title;document.getElementById('rot-rsub').textContent=i.sub;
+  document.getElementById('rot-racc').textContent=acc+'%';document.getElementById('rot-rrt').textContent=avgRT+'ms';document.getElementById('rot-rtrials').textContent=total;
+  showGameSection('rot','results');
+}
+
+// ══ DASHBOARD ════════════════════════════════════════
+const DOMAINS=[
+  {id:'cog_stroop',name:'Attention',icon:'🎨',colour:'var(--purple)',label:'FOCUS'},
+  {id:'cog_digit',name:'Memory',icon:'🔢',colour:'var(--navy)',label:'MEMORY'},
+  {id:'cog_ps',name:'Speed',icon:'⚡',colour:'var(--teal)',label:'SPEED'},
+  {id:'cog_gng',name:'Control',icon:'🛑',colour:'var(--green)',label:'CONTROL'},
+  {id:'cog_rot',name:'Spatial',icon:'🔷',colour:'var(--amber)',label:'SPATIAL'}
+];
+function renderDashboard(){
+  const grid=document.getElementById('domain-grid');grid.innerHTML='';
+  const scores=[];const flags=[];
+  DOMAINS.forEach(d=>{
+    const h=load(d.id);const last=h.length?h[h.length-1]:null;
+    const score=last?last.score:null;if(score!==null)scores.push(score);
+    const col=score!==null?scoreColour(score):'var(--gray-300)';
+    const card=document.createElement('div');card.className='domain-card';
+    card.innerHTML=`<div class="dc-icon">${d.icon}</div><div class="dc-name">${d.name}</div><div class="dc-score" style="color:${col}">${score!==null?score:'—'}</div><div class="dc-time">${last?last.date+' · '+last.time:'No test yet'}</div><div class="dc-bar"><div class="dc-fill" style="background:${col};width:${score||0}%"></div></div>`;
+    grid.appendChild(card);
+    if(score!==null&&score<50)flags.push({name:d.name,score,icon:d.icon});
+  });
+  // overall
+  const overall=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):null;
+  document.getElementById('dash-overall').textContent=overall!==null?overall:'—';
+  // flags
+  const flagDiv=document.getElementById('dash-flags'),flagLabel=document.getElementById('dash-flags-label');
+  if(flags.length){
+    flagLabel.style.display='block';
+    flagDiv.innerHTML=flags.map(f=>`<div class="flag-card"><div class="fc-title">${f.icon} ${f.name} flagged — ${f.score}/100</div><div class="fc-desc">Score below 50. Consider checking in with this athlete before competition.</div></div>`).join('');
+  }else{flagLabel.style.display='none';flagDiv.innerHTML=''}
+  // anxiety
+  const checkins=load('checkins');const today=new Date().toLocaleDateString('en-MY',{day:'numeric',month:'short'});
+  const todayCheckins=checkins.filter(c=>c.date===today);
+  const ac=document.getElementById('dash-anxiety-card');
+  if(todayCheckins.length){
+    const l=todayCheckins[todayCheckins.length-1];
+    const acol=scoreColour(100-l.avg*10);
+    ac.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:13px;font-weight:600;color:var(--gray-800)">${athlete}</div><div style="font-size:11px;color:var(--gray-400)">Last check-in: ${l.time}</div></div><div style="font-size:24px;font-weight:800;color:${l.avg<=3?'var(--green)':l.avg<=6?'var(--amber)':'var(--red)'}">${l.avg}/10</div></div><div style="font-size:12px;color:var(--gray-600);margin-top:8px">Cognitive: ${l.cog}/10 · Somatic: ${l.som}/10 · Confidence: ${l.conf}/10${l.mood?' · '+l.mood:''}</div>`;
+  }else{ac.innerHTML='<div class="empty" style="padding:16px"><div class="empty-icon">📊</div>No check-ins today yet.</div>'}
+}
+function shareDashMira(){
+  const scores=DOMAINS.map(d=>{const h=load(d.id);const last=h.length?h[h.length-1]:null;return{name:d.name,score:last?last.score:null,label:d.label}});
+  const checkins=load('checkins');const lastCI=checkins.length?checkins[checkins.length-1]:null;
+  const overall=scores.filter(s=>s.score!==null).reduce((a,b)=>a+(b.score||0),0)/Math.max(1,scores.filter(s=>s.score!==null).length);
+  let msg=`🧠 *Cognitive Readiness Report — MindReady*\n\nAthlete: *${athlete}*\nDate: ${new Date().toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'})}\n\n*Cognitive Battery:*\n`;
+  scores.forEach(s=>msg+=`${s.name}: ${s.score!==null?s.score+'/100':'Not tested'}\n`);
+  msg+=`\nOverall readiness: *${Math.round(overall)}/100*`;
+  if(lastCI)msg+=`\n\n*Anxiety check-in (${lastCI.time}):*\nCognitive: ${lastCI.cog}/10 · Somatic: ${lastCI.som}/10 · Confidence: ${lastCI.conf}/10\nAvg anxiety: ${lastCI.avg}/10${lastCI.mood?' · '+lastCI.mood:''}`;
+  const flags=scores.filter(s=>s.score!==null&&s.score<50);
+  if(flags.length)msg+=`\n\n⚠️ Flagged domains: ${flags.map(f=>f.name).join(', ')}`;
+  window.open(waUrl(msg),'_blank');
+}
+</script>
+</body>
+</html>
