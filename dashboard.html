@@ -141,8 +141,15 @@ const firebaseConfig = {
   messagingSenderId: "712667572058",
   appId: "1:712667572058:web:510595459a5d621daf3563"
 };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+
+let firebaseOk = false;
+try {
+  firebase.initializeApp(firebaseConfig);
+  firebaseOk = true;
+} catch(e) {
+  console.error('Firebase init failed:', e);
+}
+const db = firebaseOk ? firebase.database() : null;
 
 let athletesData = {};
 let currentFilter = 'all';
@@ -150,9 +157,18 @@ let currentFilter = 'all';
 function dashLogin() {
   const pin = document.getElementById('dash-pin').value.trim();
   const err = document.getElementById('dash-err');
-  if (pin !== ADMIN_PIN) { err.textContent = 'Incorrect PIN.'; return; }
+
+  if (!pin) { err.textContent = 'Please enter your PIN.'; return; }
+  if (pin !== ADMIN_PIN) { err.textContent = 'Incorrect PIN. Try: MIRA2026'; return; }
+
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
+
+  if (!db) {
+    document.getElementById('conn-status').textContent = '🔴 Firebase error — check console';
+    document.getElementById('conn-status').className = 'conn-pill conn-off';
+    return;
+  }
   initListeners();
 }
 
