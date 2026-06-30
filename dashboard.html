@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mira's Dashboard — MindReady CWG 2026</title>
+<style>
+  :root {
+    --navy:#0D3B6E; --navy-light:#1a5294; --gold:#FFD700;
+    --red:#C0392B; --green:#1a7a4a; --green-bg:#eafaf1;
+    --amber:#d68910; --amber-bg:#fef9e7; --red-bg:#fdf2f2;
+    --gray-100:#f5f6f8; --gray-200:#e8eaed; --gray-400:#9aa0a8;
+    --gray-600:#5f6368; --gray-800:#202124; --white:#fff;
+    --purple:#7b3fe4; --radius:14px; --radius-sm:9px;
+    --shadow:0 2px 8px rgba(13,59,110,0.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--gray-100);color:var(--gray-800)}
+
+  /* LOGIN */
+  #login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:linear-gradient(160deg,var(--navy) 0%,#1a5294 100%)}
+  .login-logo{width:64px;height:64px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--navy);margin-bottom:14px}
+  .login-title{font-size:22px;font-weight:700;color:#fff}
+  .login-sub{font-size:13px;color:rgba(255,255,255,.6);margin:4px 0 28px;text-align:center}
+  .login-form{width:100%;max-width:320px}
+  .login-form input{width:100%;padding:14px 16px;border-radius:var(--radius-sm);border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-size:15px;outline:none;margin-bottom:12px}
+  .login-form input::placeholder{color:rgba(255,255,255,.35)}
+  .login-form input:focus{border-color:var(--gold)}
+  .login-form button{width:100%;padding:14px;border-radius:var(--radius-sm);border:none;background:var(--gold);color:var(--navy);font-size:15px;font-weight:700;cursor:pointer}
+  .login-err{font-size:13px;color:#ffb3b3;text-align:center;margin-top:10px;min-height:18px}
+
+  /* DASHBOARD */
+  #dashboard{display:none;max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+  .dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+  .dash-title{font-size:20px;font-weight:700;color:var(--navy)}
+  .dash-sub{font-size:12px;color:var(--gray-400)}
+  .conn-pill{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600}
+  .conn-on{background:var(--green-bg);color:var(--green)}
+  .conn-off{background:var(--red-bg);color:var(--red)}
+
+  .summary-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+  .summary-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+  .summary-card .num{font-size:24px;font-weight:700;color:var(--navy)}
+  .summary-card .lbl{font-size:11px;color:var(--gray-400);margin-top:2px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+
+  .filter-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .filter-chip{padding:6px 14px;border-radius:20px;border:1px solid var(--gray-200);font-size:12px;cursor:pointer;background:#fff;color:var(--gray-600)}
+  .filter-chip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+  .athlete-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .athlete-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);cursor:pointer;transition:transform .1s}
+  .athlete-card:hover{transform:translateY(-2px)}
+  .ac-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .ac-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+  .ac-name{font-size:14px;font-weight:600}
+  .ac-last{font-size:11px;color:var(--gray-400)}
+  .ac-flag{margin-left:auto;font-size:16px}
+  .ac-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-top:1px solid var(--gray-100)}
+  .ac-row span:first-child{color:var(--gray-600)}
+  .ac-row span:last-child{font-weight:700}
+  .badge{padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+  .badge-low{background:var(--green-bg);color:var(--green)}
+  .badge-mod{background:var(--amber-bg);color:var(--amber)}
+  .badge-high{background:var(--red-bg);color:var(--red)}
+  .badge-none{background:var(--gray-100);color:var(--gray-400)}
+
+  .empty-state{text-align:center;padding:60px 20px;color:var(--gray-400)}
+  .empty-state .ei{font-size:40px;margin-bottom:12px}
+
+  /* DETAIL MODAL */
+  #detail-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;align-items:center;justify-content:center;padding:16px}
+  #detail-modal{background:#fff;border-radius:var(--radius);max-width:560px;width:100%;max-height:85vh;overflow-y:auto;padding:20px}
+  .detail-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .detail-close{margin-left:auto;cursor:pointer;font-size:20px;color:var(--gray-400);background:none;border:none}
+  .detail-section-title{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 8px}
+  .detail-item{border-left:3px solid var(--navy);padding:8px 12px;margin-bottom:6px;background:var(--gray-100);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:12px}
+  .detail-item.reflect{border-color:var(--green);background:var(--green-bg)}
+  .detail-item.cog{border-color:var(--purple);background:#f5f0ff}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-logo">MY</div>
+  <div class="login-title">Mira's Dashboard</div>
+  <div class="login-sub">MindReady · Malaysia CWG 2026<br>Sport Psychology Command Centre</div>
+  <div class="login-form">
+    <input type="password" id="dash-pin" placeholder="Enter your admin PIN" onkeydown="if(event.key==='Enter')dashLogin()">
+    <button onclick="dashLogin()">Enter Dashboard →</button>
+    <div class="login-err" id="dash-err"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="dash-header">
+    <div>
+      <div class="dash-title">🧠 MindReady Dashboard</div>
+      <div class="dash-sub">Live athlete data · Malaysia CWG 2026</div>
+    </div>
+    <div class="conn-pill conn-off" id="conn-status">Connecting...</div>
+  </div>
+
+  <div class="summary-row">
+    <div class="summary-card"><div class="num" id="sum-athletes">0</div><div class="lbl">Athletes Active</div></div>
+    <div class="summary-card"><div class="num" id="sum-checkins">0</div><div class="lbl">Total Check-ins</div></div>
+    <div class="summary-card"><div class="num" id="sum-flags">0</div><div class="lbl">Needs Attention</div></div>
+    <div class="summary-card"><div class="num" id="sum-cog">0</div><div class="lbl">Cognitive Tests</div></div>
+  </div>
+
+  <div class="filter-row">
+    <div class="filter-chip active" onclick="setFilter('all',this)">All Athletes</div>
+    <div class="filter-chip" onclick="setFilter('flagged',this)">⚠️ Flagged Only</div>
+    <div class="filter-chip" onclick="setFilter('recent',this)">🕒 Active Today</div>
+  </div>
+
+  <div class="athlete-grid" id="athlete-grid">
+    <div class="empty-state"><div class="ei">📭</div>Waiting for athlete data...</div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div id="detail-overlay" onclick="if(event.target===this)closeDetail()">
+  <div id="detail-modal"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+// ── CONFIG ───────────────────────────────────────────
+// Change this PIN before going live — separate from the athlete team PIN
+const ADMIN_PIN = 'MIRA2026';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAp2QDoXOo-kmo3m82UgVDEQLWNuwrUjn4",
+  authDomain: "mindready-cwg.firebaseapp.com",
+  databaseURL: "https://mindready-cwg-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "mindready-cwg",
+  storageBucket: "mindready-cwg.firebasestorage.app",
+  messagingSenderId: "712667572058",
+  appId: "1:712667572058:web:510595459a5d621daf3563"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+let athletesData = {};
+let currentFilter = 'all';
+
+function dashLogin() {
+  const pin = document.getElementById('dash-pin').value.trim();
+  const err = document.getElementById('dash-err');
+  if (pin !== ADMIN_PIN) { err.textContent = 'Incorrect PIN.'; return; }
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  initListeners();
+}
+
+function initListeners() {
+  db.ref('.info/connected').on('value', snap => {
+    const pill = document.getElementById('conn-status');
+    if (snap.val() === true) { pill.textContent = '🟢 Live'; pill.className = 'conn-pill conn-on'; }
+    else { pill.textContent = '🔴 Offline'; pill.className = 'conn-pill conn-off'; }
+  });
+
+  db.ref('athletes').on('value', snap => {
+    athletesData = snap.val() || {};
+    renderGrid();
+  });
+}
+
+function objToArr(obj) {
+  if (!obj) return [];
+  return Object.values(obj).sort((a,b) => (a._ts||0) - (b._ts||0));
+}
+
+function lastOf(arr) { return arr.length ? arr[arr.length-1] : null; }
+
+function buildAthleteSummary(key, data) {
+  const d = data.data || {};
+  const checkins    = objToArr(d.checkins);
+  const reflections = objToArr(d.reflections);
+  const stroop      = objToArr(d.cog_stroop);
+  const digit       = objToArr(d.cog_digit);
+  const ps          = objToArr(d.cog_ps);
+  const gng         = objToArr(d.cog_gng);
+  const rot         = objToArr(d.cog_rot);
+
+  const lastCheckin = lastOf(checkins);
+  const allTs = [
+    ...checkins, ...reflections, ...stroop, ...digit, ...ps, ...gng, ...rot
+  ].map(x => x._ts || 0);
+  const lastActive = data.lastActive || (allTs.length ? Math.max(...allTs) : 0);
+
+  let anxietyLevel = 'none';
+  if (lastCheckin) {
+    anxietyLevel = lastCheckin.avg <= 3 ? 'low' : lastCheckin.avg <= 6 ? 'mod' : 'high';
+  }
+
+  const cogScores = [stroop, digit, ps, gng, rot].map(lastOf).filter(Boolean).map(x => x.score);
+  const lowCog = cogScores.some(s => s < 40);
+  const flagged = anxietyLevel === 'high' || lowCog;
+  const totalCog = stroop.length + digit.length + ps.length + gng.length + rot.length;
+
+  return {
+    key, name: data.name || lastCheckin?._name || key,
+    checkins, reflections, stroop, digit, ps, gng, rot,
+    lastCheckin, lastActive, anxietyLevel, flagged, totalCog,
+    totalCheckins: checkins.length
+  };
+}
+
+function isToday(ts) {
+  if (!ts) return false;
+  const d = new Date(ts), now = new Date();
+  return d.toDateString() === now.toDateString();
+}
+
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderGrid();
+}
+
+function colourFor(level) {
+  return level === 'low' ? 'badge-low' : level === 'mod' ? 'badge-mod' : level === 'high' ? 'badge-high' : 'badge-none';
+}
+
+function avatarColour(name) {
+  const cols=['#0D3B6E','#1a5294','#185FA5','#1a7a4a','#6a3e9e','#a05c00','#8b2020','#1a6b6b'];
+  let hash=0; for(let i=0;i<name.length;i++) hash=name.charCodeAt(i)+((hash<<5)-hash);
+  return cols[Math.abs(hash)%cols.length];
+}
+
+function renderGrid() {
+  const keys = Object.keys(athletesData);
+  const grid = document.getElementById('athlete-grid');
+
+  if (!keys.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="ei">📭</div>No athlete data yet. Once athletes start using the app, they\\'ll appear here automatically.</div>';
+    updateSummary([]);
+    return;
+  }
+
+  let summaries = keys.map(k => buildAthleteSummary(k, athletesData[k]));
+  updateSummary(summaries);
+
+  if (currentFilter === 'flagged') summaries = summaries.filter(s => s.flagged);
+  if (currentFilter === 'recent') summaries = summaries.filter(s => isToday(s.lastActive));
+
+  summaries.sort((a,b) => b.lastActive - a.lastActive);
+
+  if (!summaries.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="ei">✅</div>No athletes match this filter.</div>';
+    return;
+  }
+
+  grid.innerHTML = summaries.map(s => {
+    const initials = s.name ? s.name.trim().split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase() : '??';
+    const lastTimeStr = s.lastActive ? new Date(s.lastActive).toLocaleString('en-MY',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : 'Never';
+    const anxLabel = s.lastCheckin ? s.lastCheckin.avg + '/10' : '—';
+    return `
+      <div class="athlete-card" onclick="openDetail('${s.key}')">
+        <div class="ac-top">
+          <div class="ac-avatar" style="background:${avatarColour(s.name||'?')}">${initials}</div>
+          <div>
+            <div class="ac-name">${s.name || s.key}</div>
+            <div class="ac-last">Last active: ${lastTimeStr}</div>
+          </div>
+          ${s.flagged ? '<div class="ac-flag" title="Needs attention">🚩</div>' : ''}
+        </div>
+        <div class="ac-row"><span>Latest anxiety</span><span class="badge ${colourFor(s.anxietyLevel)}">${anxLabel}</span></div>
+        <div class="ac-row"><span>Check-ins logged</span><span>${s.totalCheckins}</span></div>
+        <div class="ac-row"><span>Reflections</span><span>${s.reflections.length}</span></div>
+        <div class="ac-row"><span>Cognitive tests</span><span>${s.totalCog}</span></div>
+      </div>`;
+  }).join('');
+}
+
+function updateSummary(summaries) {
+  document.getElementById('sum-athletes').textContent = summaries.length;
+  document.getElementById('sum-checkins').textContent = summaries.reduce((a,s)=>a+s.totalCheckins,0);
+  document.getElementById('sum-flags').textContent = summaries.filter(s=>s.flagged).length;
+  document.getElementById('sum-cog').textContent = summaries.reduce((a,s)=>a+s.totalCog,0);
+}
+
+function openDetail(key) {
+  const s = buildAthleteSummary(key, athletesData[key]);
+  const modal = document.getElementById('detail-modal');
+
+  const checkinsHtml = s.checkins.slice().reverse().slice(0,10).map(c => `
+    <div class="detail-item">${new Date(c._ts).toLocaleString('en-MY',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})} — Cognitive ${c.cog}/10 · Somatic ${c.som}/10 · Conf ${c.conf}/10 · Avg ${c.avg}/10 ${c.mood?'· '+c.mood:''}</div>`).join('') || '<div class="detail-item">No check-ins yet</div>';
+
+  const reflectHtml = s.reflections.slice().reverse().slice(0,5).map(r => `
+    <div class="detail-item reflect">${new Date(r._ts).toLocaleString('en-MY',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})} — "${r.txt}" (Satisfaction ${r.sat}/10)</div>`).join('') || '<div class="detail-item">No reflections yet</div>';
+
+  const cogTests = [
+    ['Stroop (Attention)', s.stroop],
+    ['Digit Span (Memory)', s.digit],
+    ['Tap the Target (Speed)', s.ps],
+    ['Go/No-Go (Impulse Control)', s.gng],
+    ['Mental Rotation (Spatial)', s.rot]
+  ];
+  const cogHtml = cogTests.map(([label, arr]) => {
+    const last = lastOf(arr);
+    if (!last) return `<div class="detail-item cog">${label}: not yet taken</div>`;
+    return `<div class="detail-item cog">${label}: ${last.score}/100 — ${new Date(last._ts).toLocaleString('en-MY',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`;
+  }).join('');
+
+  modal.innerHTML = `
+    <div class="detail-header">
+      <div class="ac-avatar" style="background:${avatarColour(s.name||'?')}">${(s.name||'??').trim().split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase()}</div>
+      <div>
+        <div style="font-size:16px;font-weight:700">${s.name || s.key}</div>
+        <div style="font-size:12px;color:var(--gray-400)">${s.flagged ? '🚩 Flagged for attention' : '✅ No flags'}</div>
+      </div>
+      <button class="detail-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="detail-section-title">Recent check-ins</div>
+    ${checkinsHtml}
+    <div class="detail-section-title">Recent reflections</div>
+    ${reflectHtml}
+    <div class="detail-section-title">Cognitive readiness battery</div>
+    ${cogHtml}
+  `;
+  document.getElementById('detail-overlay').style.display = 'flex';
+}
+
+function closeDetail() { document.getElementById('detail-overlay').style.display = 'none'; }
+</script>
+</body>
+</html>
